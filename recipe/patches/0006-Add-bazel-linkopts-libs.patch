@@ -17,7 +17,7 @@ index f70018f27..565237825 100644
  
      bazel_env = dict(os.environ, PYTHON3_BIN_PATH=sys.executable)
 +    bazel_env.setdefault("BAZEL_LINKOPTS", "-static-libstdc++:-lm")
-+    bazel_env.setdefault("BAZEL_LINKLIBS", "-l%:libstdc++.a")
++    bazel_env.setdefault("BAZEL_LINKLIBS", "-l%:libstdc++.a:-l%:libstdc++fs.a")
  
      if is_native_windows_or_msys():
          SHELL = bazel_env.get("SHELL")
