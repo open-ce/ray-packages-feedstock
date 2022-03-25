@@ -14,15 +14,11 @@ source:
     - patches/0004-Remove-all-dependencies-from-setup.py.patch
     - patches/0005-Ignore-warnings-in-event.cc-and-logging.cc.patch
     - patches/0006-Add-bazel-linkopts-libs.patch
-      #    - patches/0007-Remove-bazel-version-check.patch
-      #    - patches/0008-Fix-replace_symlinks_with_junctions.patch
     - patches/0009-Update-protobuf-to-3.19.1.patch
-    - patches/0001-Debug.patch
 
 
 build:
   number: 1
-  skip: true  # [py<36 or py>39]
 
 # Need these up here for conda-smithy to handle them properly.
 requirements:
@@ -33,7 +29,6 @@ requirements:
     - cython {{ cython }}
     - curl
     - make
-    - m2-patch       # [win]
     - python {{ python }}
 
 outputs:
@@ -60,8 +55,8 @@ outputs:
     script: build-core.bat  # [win]
     requirements:
       build:
-        - {{ compiler('c') }}
-        - {{ compiler('cxx') }}
+        - {{ compiler('c') }}     # [ ppc_arch != "p10"]
+        - {{ compiler('cxx') }}   # [ ppc_arch != "p10"]
         - bazel {{ bazel }}
         - sysroot_linux-64 2.17  # [linux64]
         - curl
@@ -81,7 +76,6 @@ outputs:
         - attrs {{ attrs }}
         - click {{ click }}
         - colorama
-        - dataclasses  # [py<37]
         - filelock
         - grpcio {{ grpcio }}
         - msgpack-python >=1.0.0, <2.0.0
@@ -210,7 +204,7 @@ outputs:
         - pyyaml {{ pyyaml }}
         - scikit-image
         - scipy {{ scipy }}
-
+        - tensorflow-base {{ tensorflow }}
     test:
       imports:
         - ray.rllib
