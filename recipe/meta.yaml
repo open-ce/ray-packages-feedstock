@@ -205,6 +205,7 @@ outputs:
         - scikit-image
         - scipy {{ scipy }}
         - tensorflow-base {{ tensorflow }}
+        - keras {{ keras }}
     test:
       imports:
         - ray.rllib
