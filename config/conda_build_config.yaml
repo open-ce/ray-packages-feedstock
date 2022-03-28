@@ -1,4 +1,4 @@
 c_compiler_version:
-  - 8.2.0          # [ppc64le]
+  - 8.*
 cxx_compiler_version:
-  - 8.2.0          # [ppc64le]
+  - 8.*
