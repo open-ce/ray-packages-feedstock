@@ -14,7 +14,7 @@ source:
     - patches/0004-Remove-all-dependencies-from-setup.py.patch
     - patches/0005-Ignore-warnings-in-event.cc-and-logging.cc.patch
     - patches/0006-Add-bazel-linkopts-libs.patch
-    - patches/0009-Update-protobuf-to-3.19.1.patch
+    - patches/0009-Update-protobuf-to-3.19.1.patch    #[protobuf == "3.19.*"]
 
 
 build:
@@ -23,8 +23,8 @@ build:
 # Need these up here for conda-smithy to handle them properly.
 requirements:
   build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}        # [ ppc_arch != "p10"]
+    - {{ compiler('cxx') }}      # [ ppc_arch != "p10"]
     - bazel {{ bazel }}
     - cython {{ cython }}
     - curl
