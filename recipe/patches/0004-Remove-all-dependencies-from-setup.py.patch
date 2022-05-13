@@ -1,6 +1,6 @@
-From f49efc2190125d95c285270df87e8b49046e033d Mon Sep 17 00:00:00 2001
+From 52938022657fae525a8187dedf39cf3508c28a29 Mon Sep 17 00:00:00 2001
 From: Nishidha Panpaliya <npanpa23@in.ibm.com>
-Date: Tue, 15 Mar 2022 11:37:14 -0400
+Date: Thu, 12 May 2022 13:17:37 -0400
 Subject: [PATCH] Remove all dependencies from setup.py
 
 ---
@@ -8,7 +8,7 @@ Subject: [PATCH] Remove all dependencies from setup.py
  1 file changed, 9 insertions(+), 54 deletions(-)
 
 diff --git a/python/setup.py b/python/setup.py
-index 05f118c8b..286345bca 100644
+index 1d8c09a62..286345bca 100644
 --- a/python/setup.py
 +++ b/python/setup.py
 @@ -192,34 +192,12 @@ ray_files += [
@@ -31,7 +31,7 @@ index 05f118c8b..286345bca 100644
 -            "requests",
 -            "gpustat >= 1.0.0b1",  # for windows
 -            "opencensus",
--            "prometheus_client >= 0.7.1",
+-            "prometheus_client >= 0.7.1, < 0.14.0",
 -            "smart_open"
 -        ],
 -        "serve": [
