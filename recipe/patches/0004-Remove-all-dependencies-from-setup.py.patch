@@ -1,6 +1,6 @@
-From 728aa5b0fc1ba4ef8cab1fdd7b835e4bd7e89800 Mon Sep 17 00:00:00 2001
+From 25140177653cc6714fec50496fc7d0d77a2441c3 Mon Sep 17 00:00:00 2001
 From: Nishidha Panpaliya <npanpa23@in.ibm.com>
-Date: Mon, 6 Jun 2022 10:23:01 -0400
+Date: Mon, 13 Jun 2022 02:32:38 -0400
 Subject: [PATCH] Remove all dependencies from setup.py
 
 ---
@@ -8,7 +8,7 @@ Subject: [PATCH] Remove all dependencies from setup.py
  1 file changed, 9 insertions(+), 53 deletions(-)
 
 diff --git a/python/setup.py b/python/setup.py
-index b86924f82..2bf1eb337 100644
+index c6a7c263d..5d74b742a 100644
 --- a/python/setup.py
 +++ b/python/setup.py
 @@ -200,30 +200,12 @@ ray_files += [
@@ -17,7 +17,7 @@ index b86924f82..2bf1eb337 100644
      setup_spec.extras = {
 -        "data": [
 -            "pandas",
--            "pyarrow >= 4.0.1, < 7.0.0",
+-            "pyarrow >= 6.0.1, < 7.0.0",
 -            "fsspec",
 -        ],
 -        "default": [
@@ -73,7 +73,7 @@ index b86924f82..2bf1eb337 100644
  if setup_spec.type == SetupType.RAY:
 -    setup_spec.install_requires = [
 -        "attrs",
--        "click >= 7.0",
+-        "click >= 7.0, <= 8.0.4",
 -        "dataclasses; python_version < '3.7'",
 -        "filelock",
 -        "grpcio >= 1.28.1, <= 1.43.0",
@@ -81,7 +81,7 @@ index b86924f82..2bf1eb337 100644
 -        "msgpack >= 1.0.0, < 2.0.0",
 -        "numpy >= 1.16; python_version < '3.9'",
 -        "numpy >= 1.19.3; python_version >= '3.9'",
--        "protobuf >= 3.15.3",
+-        "protobuf >= 3.15.3, < 4.0.0",
 -        "pyyaml",
 -        "aiosignal",
 -        "frozenlist",
