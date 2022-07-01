@@ -1,4 +1,4 @@
-{% set version = "1.11.1" %}
+{% set version = "1.13.0" %}
 
 package:
   name: ray-packages
@@ -6,9 +6,8 @@ package:
 
 source:
   url: https://github.com/ray-project/ray/archive/ray-{{ version }}.tar.gz
-  sha256: d70993007205c74227cfebd3960774e021afc66736d2b6149ba3fd74a6f1ff2d
+  sha256: f877891804c60b404ddb6eabe5896902ffdf5b6e8830e8150803a2b64b56a79f
   patches:
-    - patches/0001-Do-not-force-pickle5-in-sys.path.patch
     - patches/0002-Redis-deps-now-build-but-do-not-link.patch
     - patches/0003-Disable-making-non-core-entry-scripts.patch
     - patches/0004-Remove-all-dependencies-from-setup.py.patch
@@ -23,8 +22,8 @@ build:
 # Need these up here for conda-smithy to handle them properly.
 requirements:
   build:
-    - {{ compiler('c') }}        # [ ppc_arch != "p10"]
-    - {{ compiler('cxx') }}      # [ ppc_arch != "p10"]
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
     - bazel {{ bazel }}
     - cython {{ cython }}
     - curl
@@ -55,8 +54,8 @@ outputs:
     script: build-core.bat  # [win]
     requirements:
       build:
-        - {{ compiler('c') }}     # [ ppc_arch != "p10"]
-        - {{ compiler('cxx') }}   # [ ppc_arch != "p10"]
+        - {{ compiler('c') }}
+        - {{ compiler('cxx') }}
         - bazel {{ bazel }}
         - sysroot_linux-64 2.17  # [linux64]
         - curl
@@ -73,10 +72,12 @@ outputs:
         - pickle5  # [py<38]
       run:
         - python {{ python }}
+        - aiosignal
         - attrs {{ attrs }}
         - click {{ click }}
         - colorama
         - filelock
+        - frozenlist
         - grpcio {{ grpcio }}
         - msgpack-python >=1.0.0, <2.0.0
         - numpy {{ numpy }}
@@ -86,6 +87,8 @@ outputs:
         - pyyaml {{ pyyaml }}
         - redis-py >=3.5.0
         - setproctitle =1.2.2
+        - requests {{ requests }}
+        - virtualenv
 
     test:
       imports:
@@ -106,18 +109,17 @@ outputs:
         - python {{ python }}
         - {{ pin_subpackage('ray-core', exact=True) }}
         - aiohttp >=3.7
-        - aiosignal
         - aiohttp-cors
         - aioredis <2
         - colorful
-        - frozenlist
         # gpustat-0.6.0 has a dependency which does not exist on Windows;
         # skip it there until gpustat is fixed as it is optional
         - gpustat  # [not win]
         - jsonschema
         - requests {{ requests }}
         - opencensus
-        - prometheus_client >=0.7.1
+        - prometheus_client >=0.7.1,<0.14.0
+        - requests {{ requests }}
         - smart_open
         - py-spy >=0.2.0
 
@@ -226,6 +228,7 @@ outputs:
         - requests {{ requests }}
         - starlette {{ starlette }}
         - fastapi
+        - aiorwlock
     test:
       imports:
         - ray.serve
