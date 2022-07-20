@@ -17,13 +17,13 @@ source:
 
 
 build:
-  number: 1
+  number: 2
 
 # Need these up here for conda-smithy to handle them properly.
 requirements:
   build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}      # [ ppc_arch != "p10"]
+    - {{ compiler('cxx') }}    # [ ppc_arch != "p10"]
     - bazel {{ bazel }}
     - cython {{ cython }}
     - curl
@@ -54,8 +54,8 @@ outputs:
     script: build-core.bat  # [win]
     requirements:
       build:
-        - {{ compiler('c') }}
-        - {{ compiler('cxx') }}
+        - {{ compiler('c') }}     # [ ppc_arch != "p10"]
+        - {{ compiler('cxx') }}   # [ ppc_arch != "p10"]
         - bazel {{ bazel }}
         - sysroot_linux-64 2.17  # [linux64]
         - curl
