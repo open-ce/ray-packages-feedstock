@@ -1,4 +1,4 @@
-{% set version = "1.13.1" %}
+{% set version = "2.0.1" %}
 
 package:
   name: ray-packages
@@ -6,14 +6,14 @@ package:
 
 source:
   git_url: https://github.com/ray-project/ray
-  git_rev: {{ version }}
+  git_rev: ray-{{ version }}
   patches:
     - patches/0002-Redis-deps-now-build-but-do-not-link.patch
     - patches/0003-Disable-making-non-core-entry-scripts.patch
     - patches/0004-Remove-all-dependencies-from-setup.py.patch
     - patches/0005-Ignore-warnings-in-event.cc-and-logging.cc.patch
     - patches/0006-Add-bazel-linkopts-libs.patch
-    - patches/0009-Update-protobuf-to-3.19.1.patch    #[protobuf == "3.19.*"]
+ #   - patches/0009-Update-protobuf-to-3.19.1.patch    #[protobuf == "3.19.*"]
 
 
 build:
@@ -86,9 +86,11 @@ outputs:
         - psutil {{ psutil }}
         - pyyaml {{ pyyaml }}
         - redis-py >=3.5.0
+        - jsonschema
         - setproctitle =1.2.2
         - requests {{ requests }}
         - virtualenv
+        - typing-extensions {{ typing_extensions }}
 
     test:
       imports:
@@ -122,6 +124,7 @@ outputs:
         - requests {{ requests }}
         - smart_open
         - py-spy >=0.2.0
+        - pydantic
 
     test:
       imports:
@@ -224,7 +227,7 @@ outputs:
       run:
         - python {{ python }}
         - {{ pin_subpackage('ray-core', exact=True) }}
-        - uvicorn
+        - uvicorn 0.16.0
         - requests {{ requests }}
         - starlette {{ starlette }}
         - fastapi

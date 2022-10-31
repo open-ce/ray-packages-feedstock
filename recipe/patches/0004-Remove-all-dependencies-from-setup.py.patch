@@ -1,26 +1,29 @@
-From 25140177653cc6714fec50496fc7d0d77a2441c3 Mon Sep 17 00:00:00 2001
+From 4030beaf353e8b8e5f193809b76a136abd5bc77e Mon Sep 17 00:00:00 2001
 From: Nishidha Panpaliya <npanpa23@in.ibm.com>
-Date: Mon, 13 Jun 2022 02:32:38 -0400
+Date: Mon, 31 Oct 2022 08:39:14 +0000
 Subject: [PATCH] Remove all dependencies from setup.py
 
 ---
- python/setup.py | 62 +++++++------------------------------------------
- 1 file changed, 9 insertions(+), 53 deletions(-)
+ python/setup.py | 76 ++++++-------------------------------------------
+ 1 file changed, 9 insertions(+), 67 deletions(-)
 
 diff --git a/python/setup.py b/python/setup.py
-index c6a7c263d..5d74b742a 100644
+index c79802f19..2994d89a7 100644
 --- a/python/setup.py
 +++ b/python/setup.py
-@@ -200,30 +200,12 @@ ray_files += [
- # in this directory
- if setup_spec.type == SetupType.RAY:
+@@ -213,40 +213,12 @@ if setup_spec.type == SetupType.RAY:
+         # Numpy dropped python 3.6 support in 1.20.
+         numpy_dep = "numpy >= 1.19"
      setup_spec.extras = {
 -        "data": [
--            "pandas",
+-            numpy_dep,
+-            pandas_dep,
 -            "pyarrow >= 6.0.1, < 7.0.0",
 -            "fsspec",
 -        ],
 -        "default": [
+-            # If adding dependencies necessary to launch the dashboard api server,
+-            # please add it to dashboard/optional_deps.py as well.
 -            "aiohttp >= 3.7",
 -            "aiohttp_cors",
 -            "colorful",
@@ -28,10 +31,17 @@ index c6a7c263d..5d74b742a 100644
 -            "requests",
 -            "gpustat >= 1.0.0b1",  # for windows
 -            "opencensus",
+-            "pydantic",
 -            "prometheus_client >= 0.7.1, < 0.14.0",
 -            "smart_open",
 -        ],
--        "serve": ["uvicorn==0.16.0", "requests", "starlette", "fastapi", "aiorwlock"],
+-        "serve": [
+-            "uvicorn==0.16.0",
+-            "requests",
+-            "starlette",
+-            "fastapi",
+-            "aiorwlock",
+-        ],
 -        "tune": ["pandas", "tabulate", "tensorboardX>=1.9", "requests"],
 -        "k8s": ["kubernetes", "urllib3"],
 -        "observability": [
@@ -47,14 +57,14 @@ index c6a7c263d..5d74b742a 100644
 +        "observability": [],
      }
  
-     if sys.version_info >= (3, 7):
-@@ -243,17 +225,7 @@ if setup_spec.type == SetupType.RAY:
+     # Ray Serve depends on the Ray dashboard components.
+@@ -260,17 +232,7 @@ if setup_spec.type == SetupType.RAY:
      if sys.version_info >= (3, 7, 0):
          setup_spec.extras["k8s"].append("kopf")
  
 -    setup_spec.extras["rllib"] = setup_spec.extras["tune"] + [
 -        "dm_tree",
--        "gym<0.22",
+-        "gym>=0.21.0,<0.24.0",
 -        "lz4",
 -        # matplotlib (dependency of scikit-image) 3.4.3 breaks docker build
 -        # Todo: Remove this when safe?
@@ -65,9 +75,9 @@ index c6a7c263d..5d74b742a 100644
 -    ]
 +    setup_spec.extras["rllib"] = setup_spec.extras["tune"] + []
  
-     setup_spec.extras["all"] = list(
-         set(chain.from_iterable(setup_spec.extras.values()))
-@@ -263,23 +235,7 @@ if setup_spec.type == SetupType.RAY:
+     setup_spec.extras["train"] = setup_spec.extras["tune"]
+ 
+@@ -292,27 +254,7 @@ if setup_spec.type == SetupType.RAY:
  # should be carefully curated. If you change it, please reflect
  # the change in the matching section of requirements/requirements.txt
  if setup_spec.type == SetupType.RAY:
@@ -76,7 +86,8 @@ index c6a7c263d..5d74b742a 100644
 -        "click >= 7.0, <= 8.0.4",
 -        "dataclasses; python_version < '3.7'",
 -        "filelock",
--        "grpcio >= 1.28.1, <= 1.43.0",
+-        "grpcio >= 1.32.0, <= 1.43.0; python_version < '3.10'",
+-        "grpcio >= 1.42.0, <= 1.43.0; python_version >= '3.10'",
 -        "jsonschema",
 -        "msgpack >= 1.0.0, < 2.0.0",
 -        "numpy >= 1.16; python_version < '3.9'",
@@ -86,13 +97,16 @@ index c6a7c263d..5d74b742a 100644
 -        "aiosignal",
 -        "frozenlist",
 -        "requests",
+-        # Light weight requirement, can be replaced with "typing" once
+-        # we deprecate Python 3.7 (this will take a while).
+-        "typing_extensions; python_version < '3.8'",
 -        "virtualenv",  # For pip runtime env.
 -    ]
 +    setup_spec.install_requires = []
  
  
  def is_native_windows_or_msys():
-@@ -732,7 +688,7 @@ setuptools.setup(
+@@ -766,7 +708,7 @@ setuptools.setup(
      # The BinaryDistribution argument triggers build_ext.
      distclass=BinaryDistribution,
      install_requires=setup_spec.install_requires,
@@ -102,5 +116,5 @@ index c6a7c263d..5d74b742a 100644
      entry_points={
          "console_scripts": [
 -- 
-2.23.0
+2.34.1
 
