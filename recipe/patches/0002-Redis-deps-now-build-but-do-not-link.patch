@@ -1,14 +1,14 @@
-From 5c39774c35bf22983e5129806ab275a1a4d55c9b Mon Sep 17 00:00:00 2001
+From 2f46c66596bc113dae774cc86558f31b575dfcd9 Mon Sep 17 00:00:00 2001
 From: Nishidha Panpaliya <npanpa23@in.ibm.com>
-Date: Fri, 6 Jan 2023 02:07:29 -0500
-Subject: [PATCH] Redis changes
+Date: Tue, 10 Jan 2023 06:17:13 +0000
+Subject: [PATCH] Redis patches
 
 ---
  bazel/BUILD.redis                      |  5 ++
  bazel/ray_deps_setup.bzl               |  1 +
  thirdparty/patches/redis-deps-ar.patch | 68 ++++++++++++++++++++++++++
- thirdparty/patches/redis-quiet.patch   | 38 +++++++++-----
- 4 files changed, 100 insertions(+), 12 deletions(-)
+ thirdparty/patches/redis-quiet.patch   | 20 ++++++--
+ 4 files changed, 91 insertions(+), 3 deletions(-)
  create mode 100644 thirdparty/patches/redis-deps-ar.patch
 
 diff --git a/bazel/BUILD.redis b/bazel/BUILD.redis
@@ -40,24 +40,24 @@ index 31d5f06b9..90bb78641 100644
      )
 diff --git a/thirdparty/patches/redis-deps-ar.patch b/thirdparty/patches/redis-deps-ar.patch
 new file mode 100644
-index 000000000..fb9f493d2
+index 000000000..9bee58342
 --- /dev/null
 +++ b/thirdparty/patches/redis-deps-ar.patch
 @@ -0,0 +1,68 @@
-+From eec739e13d59121ffc73d5e91ac63df745c6e17b Mon Sep 17 00:00:00 2001
++From 6686b7f7304e0fd32b7be4ff902e0eedc0f7f9f6 Mon Sep 17 00:00:00 2001
 +From: Nishidha Panpaliya <npanpa23@in.ibm.com>
-+Date: Fri, 6 Jan 2023 01:34:21 -0500
-+Subject: [PATCH] Redis AR changes
++Date: Tue, 10 Jan 2023 06:14:14 +0000
++Subject: [PATCH 2/2] Redis AR changes
 +
 +---
 + deps/Makefile | 8 ++++++--
 + src/Makefile  | 4 +++-
 + 2 files changed, 9 insertions(+), 3 deletions(-)
 +
-+diff --git deps/Makefile deps/Makefile
++diff --git a/deps/Makefile b/deps/Makefile
 +index 0c13eea90..47355278c 100644
-+--- deps/Makefile
-++++ deps/Makefile
++--- a/deps/Makefile
+++++ b/deps/Makefile
 +@@ -11,6 +11,10 @@ BINCOLOR="\033[37;1m"
 + MAKECOLOR="\033[32;1m"
 + ENDCOLOR="\033[0m"
@@ -87,10 +87,10 @@ index 000000000..fb9f493d2
 + 
 + .PHONY: lua
 + 
-+diff --git src/Makefile src/Makefile
++diff --git a/src/Makefile b/src/Makefile
 +index 704d4b43d..0911b3118 100644
-+--- src/Makefile
-++++ src/Makefile
++--- a/src/Makefile
+++++ b/src/Makefile
 +@@ -306,6 +306,8 @@ SRCCOLOR="\033[33m"
 + BINCOLOR="\033[37;1m"
 + MAKECOLOR="\033[32;1m"
@@ -110,21 +110,17 @@ index 000000000..fb9f493d2
 + .PHONY: persist-settings
 + 
 +-- 
-+2.23.0
++2.34.1
 +
 diff --git a/thirdparty/patches/redis-quiet.patch b/thirdparty/patches/redis-quiet.patch
-index d03438759..fea7c6eca 100644
+index d03438759..d03d22c43 100644
 --- a/thirdparty/patches/redis-quiet.patch
 +++ b/thirdparty/patches/redis-quiet.patch
-@@ -1,7 +1,18 @@
--diff --git a/deps/Makefile b/deps/Makefile
--index 8592e17..0c13eea 100644
----- a/deps/Makefile
--+++ b/deps/Makefile
-+From 5f3ab55ff32be27f4d214ac76cca3354526a7441 Mon Sep 17 00:00:00 2001
+@@ -1,5 +1,16 @@
++From 489039129eadfeeb3c21f47fba0260846c32dd51 Mon Sep 17 00:00:00 2001
 +From: Nishidha Panpaliya <npanpa23@in.ibm.com>
-+Date: Fri, 6 Jan 2023 01:18:15 -0500
-+Subject: [PATCH] Upstream patches
++Date: Tue, 10 Jan 2023 06:13:25 +0000
++Subject: [PATCH 1/2] Redis quiet patch
 +
 +---
 + deps/Makefile             | 10 +++++-----
@@ -132,50 +128,37 @@ index d03438759..fea7c6eca 100644
 + src/Makefile              |  8 ++++----
 + 3 files changed, 10 insertions(+), 10 deletions(-)
 +
-+diff --git deps/Makefile deps/Makefile
+ diff --git a/deps/Makefile b/deps/Makefile
+-index 8592e17..0c13eea 100644
 +index 8592e1766..0c13eea90 100644
-+--- deps/Makefile
-++++ deps/Makefile
+ --- a/deps/Makefile
+ +++ b/deps/Makefile
  @@ -49,19 +49,19 @@ ifeq ($(BUILD_TLS),yes)
-  endif
-  
-@@ -43,10 +54,10 @@ index 8592e17..0c13eea 100644
-  	cd jemalloc && ./configure --with-version=5.2.1-0-g0 --with-lg-quantum=3 --with-jemalloc-prefix=je_ CFLAGS="$(JEMALLOC_CFLAGS)" LDFLAGS="$(JEMALLOC_LDFLAGS)" $(JEMALLOC_CONFIGURE_OPTS)
+@@ -44,7 +55,7 @@ index 8592e17..0c13eea 100644
   	cd jemalloc && $(MAKE) CFLAGS="$(JEMALLOC_CFLAGS)" LDFLAGS="$(JEMALLOC_LDFLAGS)" lib/libjemalloc.a
   
--diff --git a/deps/jemalloc/Makefile.in b/deps/jemalloc/Makefile.in
+ diff --git a/deps/jemalloc/Makefile.in b/deps/jemalloc/Makefile.in
 -index 7128b00..da8e429 100644
----- a/deps/jemalloc/Makefile.in
--+++ b/deps/jemalloc/Makefile.in
-+diff --git deps/jemalloc/Makefile.in deps/jemalloc/Makefile.in
 +index 7128b007e..da8e4299f 100644
-+--- deps/jemalloc/Makefile.in
-++++ deps/jemalloc/Makefile.in
+ --- a/deps/jemalloc/Makefile.in
+ +++ b/deps/jemalloc/Makefile.in
  @@ -406,7 +406,7 @@ $(objroot)include/jemalloc/internal/private_namespace_jet.gen.h: $(C_JET_SYMS)
-  	$(SHELL) $(srcroot)include/jemalloc/internal/private_namespace.sh $^ > $@
-  
-@@ -56,10 +67,10 @@ index 7128b00..da8e429 100644
-  
+@@ -57,7 +68,7 @@ index 7128b00..da8e429 100644
   $(CPP_OBJS) $(CPP_PIC_OBJS) $(TESTS_CPP_OBJS): %.$(O):
   	@mkdir -p $(@D)
--diff --git a/src/Makefile b/src/Makefile
+ diff --git a/src/Makefile b/src/Makefile
 -index e4f7d90..704d4b4 100644
----- a/src/Makefile
--+++ b/src/Makefile
-+diff --git src/Makefile src/Makefile
 +index e4f7d9068..704d4b43d 100644
-+--- src/Makefile
-++++ src/Makefile
+ --- a/src/Makefile
+ +++ b/src/Makefile
  @@ -115,7 +115,7 @@ endif
-  # Override default settings if possible
-  -include .make-settings
 @@ -82,3 +93,6 @@ index e4f7d90..704d4b4 100644
   
   Makefile.dep:
   	-$(REDIS_CC) -MM $(ALL_SOURCES) > Makefile.dep 2> /dev/null || true
 +-- 
-+2.23.0
++2.34.1
 +
 -- 
-2.23.0
+2.34.1
 
