@@ -22,7 +22,7 @@ index 90bb78641..a0baf3251 100644
 -        commit = "022b8daf2bb4836ac7a50e4a1d8ea056a3e1e403",
 +        sha256 = "0ec55ebafbfe7ae091dca3a7135c2250e27077668683682730d5348daa9c25f2",
 +        strip_prefix = "rules_perl-ebd65464923e570846f53a4e73c0789e2abdf45a",
-+        url = "https://github.com/npanpaliya/rules_perl/archive/ebd65464923e570846f53a4e73c0789e2abdf45a.tar.gz,
++        url = "https://github.com/npanpaliya/rules_perl/archive/ebd65464923e570846f53a4e73c0789e2abdf45a.tar.gz",
      )
  
      http_archive(
