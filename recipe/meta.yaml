@@ -212,6 +212,7 @@ outputs:
         - scipy {{ scipy }}
         - tensorflow-base {{ tensorflow }}
         - keras {{ keras }}
+        - rich
     test:
       imports:
         - ray.rllib
