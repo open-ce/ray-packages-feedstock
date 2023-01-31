@@ -1,42 +1,23 @@
-From 161ce4fa03c36084dead9dabb5ddb30234ae06b0 Mon Sep 17 00:00:00 2001
+From 2f46c66596bc113dae774cc86558f31b575dfcd9 Mon Sep 17 00:00:00 2001
 From: Nishidha Panpaliya <npanpa23@in.ibm.com>
-Date: Mon, 31 Oct 2022 13:44:56 +0000
-Subject: [PATCH] Redis deps now build but do not link
+Date: Tue, 10 Jan 2023 06:17:13 +0000
+Subject: [PATCH] Redis patches
 
 ---
- bazel/BUILD.redis                      | 13 ++++-
+ bazel/BUILD.redis                      |  5 ++
  bazel/ray_deps_setup.bzl               |  1 +
  thirdparty/patches/redis-deps-ar.patch | 68 ++++++++++++++++++++++++++
- 3 files changed, 80 insertions(+), 2 deletions(-)
+ thirdparty/patches/redis-quiet.patch   | 20 ++++++--
+ 4 files changed, 91 insertions(+), 3 deletions(-)
  create mode 100644 thirdparty/patches/redis-deps-ar.patch
 
 diff --git a/bazel/BUILD.redis b/bazel/BUILD.redis
-index f488d607f..234d72e68 100644
+index 9edccf578..391e2c035 100644
 --- a/bazel/BUILD.redis
 +++ b/bazel/BUILD.redis
-@@ -14,13 +14,17 @@ genrule(
-         "redis-cli",
+@@ -76,5 +76,10 @@ genrule(
      ],
-     cmd = """
--        unset CC LDFLAGS CXX CXXFLAGS
-+        export CC=$(CC)
-+        export CFLAGS=$(CC_FLAGS)
-+        export AR=$${CC/gnu-cc/gnu-ar}
-+        export NM=$${CC/gnu-cc/gnu-nm}
-+        export RANLIB=$${CC/gnu-cc/gnu-ranlib}
-         tmpdir="redis.tmp"
-         p=$(location Makefile)
-         cp -p -L -R -- "$${p%/*}" "$${tmpdir}"
-         chmod +x "$${tmpdir}"/deps/jemalloc/configure
-         parallel="$$(getconf _NPROCESSORS_ONLN || echo 1)"
--        make -s -C "$${tmpdir}" -j"$${parallel}" V=0 CFLAGS="$${CFLAGS-} -DLUA_USE_MKSTEMP -Wno-pragmas -Wno-empty-body"
-+        make -s -C "$${tmpdir}" -j"$${parallel}" V=0 CFLAGS="$${CFLAGS-} -DLUA_USE_MKSTEMP -Wno-pragmas -Wno-empty-body" AR="$${AR}" RANLIB="$${RANLIB}"
-         mv "$${tmpdir}"/src/redis-server $(location redis-server)
-         chmod +x $(location redis-server)
-         mv "$${tmpdir}"/src/redis-cli $(location redis-cli)
-@@ -28,6 +32,11 @@ genrule(
-         rm -r -f -- "$${tmpdir}"
-     """,
+     cmd = genrule_cmd,
      visibility = ["//visibility:public"],
 +    toolchains = [
 +        "@bazel_tools//tools/cpp:current_cc_toolchain",
@@ -45,50 +26,50 @@ index f488d607f..234d72e68 100644
 +    ],
      tags = ["local"],
  )
- 
 diff --git a/bazel/ray_deps_setup.bzl b/bazel/ray_deps_setup.bzl
-index b5c1beb54..f2b372fcc 100644
+index 31d5f06b9..90bb78641 100644
 --- a/bazel/ray_deps_setup.bzl
 +++ b/bazel/ray_deps_setup.bzl
-@@ -102,6 +102,7 @@ def ray_deps_setup():
+@@ -103,6 +103,7 @@ def ray_deps_setup():
          sha256 = "40827fcaf188456ad9b3be8e27a4f403c43672b6bb6201192dc15756af6f1eae",
          patches = [
              "@com_github_ray_project_ray//thirdparty/patches:redis-quiet.patch",
 +            "@com_github_ray_project_ray//thirdparty/patches:redis-deps-ar.patch",
          ],
+         workspace_file_content = 'workspace(name = "com_github_antirez_redis")'
      )
- 
 diff --git a/thirdparty/patches/redis-deps-ar.patch b/thirdparty/patches/redis-deps-ar.patch
 new file mode 100644
-index 000000000..acb40eb1f
+index 000000000..9bee58342
 --- /dev/null
 +++ b/thirdparty/patches/redis-deps-ar.patch
 @@ -0,0 +1,68 @@
-+From aaec364c3ad86d37512c88c71361565c1b96d49c Mon Sep 17 00:00:00 2001
++From 6686b7f7304e0fd32b7be4ff902e0eedc0f7f9f6 Mon Sep 17 00:00:00 2001
 +From: Nishidha Panpaliya <npanpa23@in.ibm.com>
-+Date: Mon, 31 Oct 2022 13:38:52 +0000
-+Subject: [PATCH] AR changes
++Date: Tue, 10 Jan 2023 06:14:14 +0000
++Subject: [PATCH 2/2] Redis AR changes
 +
 +---
-+ deps/Makefile | 7 +++++--
-+ src/Makefile  | 5 ++++-
++ deps/Makefile | 8 ++++++--
++ src/Makefile  | 4 +++-
 + 2 files changed, 9 insertions(+), 3 deletions(-)
 +
-+diff --git deps/Makefile deps/Makefile
-+index 0c13eea90..cde36af5f 100644
-+--- deps/Makefile
-++++ deps/Makefile
-+@@ -10,6 +10,9 @@ SRCCOLOR="\033[33m"
-+ BINCOLOR="\033[37;1m"
++diff --git a/deps/Makefile b/deps/Makefile
++index 0c13eea90..47355278c 100644
++--- a/deps/Makefile
+++++ b/deps/Makefile
++@@ -11,6 +11,10 @@ BINCOLOR="\033[37;1m"
 + MAKECOLOR="\033[32;1m"
 + ENDCOLOR="\033[0m"
++ 
 ++AR=ar
 ++ARFLAGS=rcu
 ++RANLIB=ranlib
-+ 
+++
 + default:
 + 	@echo "Explicit target required"
-+@@ -50,7 +53,7 @@ endif
++ 
++@@ -50,7 +54,7 @@ endif
 + 
 + hiredis: .make-prerequisites
 + 	#@printf '%b %b\n' $(MAKECOLOR)MAKE$(ENDCOLOR) $(BINCOLOR)$@$(ENDCOLOR)
@@ -97,7 +78,7 @@ index 000000000..acb40eb1f
 + 
 + .PHONY: hiredis
 + 
-+@@ -86,7 +89,7 @@ ARFLAGS=rc
++@@ -86,7 +90,7 @@ ARFLAGS=rc
 + 
 + lua: .make-prerequisites
 + 	#@printf '%b %b\n' $(MAKECOLOR)MAKE$(ENDCOLOR) $(BINCOLOR)$@$(ENDCOLOR)
@@ -106,21 +87,20 @@ index 000000000..acb40eb1f
 + 
 + .PHONY: lua
 + 
-+diff --git src/Makefile src/Makefile
-+index 218543fcf..9040db40d 100644
-+--- src/Makefile
-++++ src/Makefile
-+@@ -306,6 +306,9 @@ SRCCOLOR="\033[33m"
++diff --git a/src/Makefile b/src/Makefile
++index 704d4b43d..0911b3118 100644
++--- a/src/Makefile
+++++ b/src/Makefile
++@@ -306,6 +306,8 @@ SRCCOLOR="\033[33m"
 + BINCOLOR="\033[37;1m"
 + MAKECOLOR="\033[32;1m"
 + ENDCOLOR="\033[0m"
 ++AR=ar
 ++RANLIB=ranlib
-++
 + 
 + ifndef V
 + QUIET_CC = @printf '    %b %b\n' $(CCCOLOR)CC$(ENDCOLOR) $(SRCCOLOR)$@$(ENDCOLOR) 1>&2;
-+@@ -352,7 +355,7 @@ persist-settings: distclean
++@@ -352,7 +354,7 @@ persist-settings: distclean
 + 	echo REDIS_LDFLAGS=$(REDIS_LDFLAGS) >> .make-settings
 + 	echo PREV_FINAL_CFLAGS=$(FINAL_CFLAGS) >> .make-settings
 + 	echo PREV_FINAL_LDFLAGS=$(FINAL_LDFLAGS) >> .make-settings
@@ -129,6 +109,53 @@ index 000000000..acb40eb1f
 + 
 + .PHONY: persist-settings
 + 
++-- 
++2.34.1
++
+diff --git a/thirdparty/patches/redis-quiet.patch b/thirdparty/patches/redis-quiet.patch
+index d03438759..d03d22c43 100644
+--- a/thirdparty/patches/redis-quiet.patch
++++ b/thirdparty/patches/redis-quiet.patch
+@@ -1,5 +1,16 @@
++From 489039129eadfeeb3c21f47fba0260846c32dd51 Mon Sep 17 00:00:00 2001
++From: Nishidha Panpaliya <npanpa23@in.ibm.com>
++Date: Tue, 10 Jan 2023 06:13:25 +0000
++Subject: [PATCH 1/2] Redis quiet patch
++
++---
++ deps/Makefile             | 10 +++++-----
++ deps/jemalloc/Makefile.in |  2 +-
++ src/Makefile              |  8 ++++----
++ 3 files changed, 10 insertions(+), 10 deletions(-)
++
+ diff --git a/deps/Makefile b/deps/Makefile
+-index 8592e17..0c13eea 100644
++index 8592e1766..0c13eea90 100644
+ --- a/deps/Makefile
+ +++ b/deps/Makefile
+ @@ -49,19 +49,19 @@ ifeq ($(BUILD_TLS),yes)
+@@ -44,7 +55,7 @@ index 8592e17..0c13eea 100644
+  	cd jemalloc && $(MAKE) CFLAGS="$(JEMALLOC_CFLAGS)" LDFLAGS="$(JEMALLOC_LDFLAGS)" lib/libjemalloc.a
+  
+ diff --git a/deps/jemalloc/Makefile.in b/deps/jemalloc/Makefile.in
+-index 7128b00..da8e429 100644
++index 7128b007e..da8e4299f 100644
+ --- a/deps/jemalloc/Makefile.in
+ +++ b/deps/jemalloc/Makefile.in
+ @@ -406,7 +406,7 @@ $(objroot)include/jemalloc/internal/private_namespace_jet.gen.h: $(C_JET_SYMS)
+@@ -57,7 +68,7 @@ index 7128b00..da8e429 100644
+  $(CPP_OBJS) $(CPP_PIC_OBJS) $(TESTS_CPP_OBJS): %.$(O):
+  	@mkdir -p $(@D)
+ diff --git a/src/Makefile b/src/Makefile
+-index e4f7d90..704d4b4 100644
++index e4f7d9068..704d4b43d 100644
+ --- a/src/Makefile
+ +++ b/src/Makefile
+ @@ -115,7 +115,7 @@ endif
+@@ -82,3 +93,6 @@ index e4f7d90..704d4b4 100644
+  
+  Makefile.dep:
+  	-$(REDIS_CC) -MM $(ALL_SOURCES) > Makefile.dep 2> /dev/null || true
 +-- 
 +2.34.1
 +

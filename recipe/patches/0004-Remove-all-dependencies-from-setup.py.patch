@@ -1,24 +1,24 @@
-From 4030beaf353e8b8e5f193809b76a136abd5bc77e Mon Sep 17 00:00:00 2001
+From fb6ff59a683eee72bedff98d5c544a4226f83a3a Mon Sep 17 00:00:00 2001
 From: Nishidha Panpaliya <npanpa23@in.ibm.com>
-Date: Mon, 31 Oct 2022 08:39:14 +0000
-Subject: [PATCH] Remove all dependencies from setup.py
+Date: Fri, 6 Jan 2023 02:18:58 -0500
+Subject: [PATCH 2/4] Remove all dependencies from setup.py
 
 ---
- python/setup.py | 76 ++++++-------------------------------------------
- 1 file changed, 9 insertions(+), 67 deletions(-)
+ python/setup.py | 73 ++++++-------------------------------------------
+ 1 file changed, 9 insertions(+), 64 deletions(-)
 
 diff --git a/python/setup.py b/python/setup.py
-index c79802f19..2994d89a7 100644
+index e7d838a0c..655f92f40 100644
 --- a/python/setup.py
 +++ b/python/setup.py
-@@ -213,40 +213,12 @@ if setup_spec.type == SetupType.RAY:
-         # Numpy dropped python 3.6 support in 1.20.
-         numpy_dep = "numpy >= 1.19"
+@@ -224,34 +224,12 @@ if setup_spec.type == SetupType.RAY:
+         # Serialization workaround for pyarrow 7.0.0+ doesn't work for Windows.
+         pyarrow_dep = "pyarrow >= 6.0.1, < 7.0.0"
      setup_spec.extras = {
 -        "data": [
 -            numpy_dep,
 -            pandas_dep,
--            "pyarrow >= 6.0.1, < 7.0.0",
+-            pyarrow_dep,
 -            "fsspec",
 -        ],
 -        "default": [
@@ -29,19 +29,13 @@ index c79802f19..2994d89a7 100644
 -            "colorful",
 -            "py-spy >= 0.2.0",
 -            "requests",
--            "gpustat >= 1.0.0b1",  # for windows
+-            "gpustat >= 1.0.0",  # for windows
 -            "opencensus",
 -            "pydantic",
 -            "prometheus_client >= 0.7.1, < 0.14.0",
 -            "smart_open",
 -        ],
--        "serve": [
--            "uvicorn==0.16.0",
--            "requests",
--            "starlette",
--            "fastapi",
--            "aiorwlock",
--        ],
+-        "serve": ["uvicorn", "requests", "starlette", "fastapi", "aiorwlock"],
 -        "tune": ["pandas", "tabulate", "tensorboardX>=1.9", "requests"],
 -        "k8s": ["kubernetes", "urllib3"],
 -        "observability": [
@@ -58,9 +52,9 @@ index c79802f19..2994d89a7 100644
      }
  
      # Ray Serve depends on the Ray dashboard components.
-@@ -260,17 +232,7 @@ if setup_spec.type == SetupType.RAY:
-     if sys.version_info >= (3, 7, 0):
-         setup_spec.extras["k8s"].append("kopf")
+@@ -262,19 +240,7 @@ if setup_spec.type == SetupType.RAY:
+     if RAY_EXTRA_CPP:
+         setup_spec.extras["cpp"] = ["ray-cpp==" + setup_spec.version]
  
 -    setup_spec.extras["rllib"] = setup_spec.extras["tune"] + [
 -        "dm_tree",
@@ -72,27 +66,30 @@ index c79802f19..2994d89a7 100644
 -        "scikit-image",
 -        "pyyaml",
 -        "scipy",
+-        "typer",
+-        "rich",
 -    ]
 +    setup_spec.extras["rllib"] = setup_spec.extras["tune"] + []
  
      setup_spec.extras["train"] = setup_spec.extras["tune"]
  
-@@ -292,27 +254,7 @@ if setup_spec.type == SetupType.RAY:
- # should be carefully curated. If you change it, please reflect
- # the change in the matching section of requirements/requirements.txt
+@@ -300,28 +266,7 @@ if setup_spec.type == SetupType.RAY:
+ # install-core-prerelease-dependencies.sh so we can test
+ # new releases candidates.
  if setup_spec.type == SetupType.RAY:
 -    setup_spec.install_requires = [
 -        "attrs",
--        "click >= 7.0, <= 8.0.4",
+-        "click >= 7.0",
 -        "dataclasses; python_version < '3.7'",
 -        "filelock",
--        "grpcio >= 1.32.0, <= 1.43.0; python_version < '3.10'",
--        "grpcio >= 1.42.0, <= 1.43.0; python_version >= '3.10'",
+-        "grpcio >= 1.32.0; python_version < '3.10'",
+-        "grpcio >= 1.42.0; python_version >= '3.10'",
 -        "jsonschema",
 -        "msgpack >= 1.0.0, < 2.0.0",
 -        "numpy >= 1.16; python_version < '3.9'",
 -        "numpy >= 1.19.3; python_version >= '3.9'",
--        "protobuf >= 3.15.3, < 4.0.0",
+-        "packaging; python_version >= '3.10'",
+-        "protobuf >= 3.15.3, != 3.19.5",
 -        "pyyaml",
 -        "aiosignal",
 -        "frozenlist",
@@ -100,13 +97,13 @@ index c79802f19..2994d89a7 100644
 -        # Light weight requirement, can be replaced with "typing" once
 -        # we deprecate Python 3.7 (this will take a while).
 -        "typing_extensions; python_version < '3.8'",
--        "virtualenv",  # For pip runtime env.
+-        "virtualenv>=20.0.24",  # For pip runtime env.
 -    ]
 +    setup_spec.install_requires = []
  
  
  def is_native_windows_or_msys():
-@@ -766,7 +708,7 @@ setuptools.setup(
+@@ -775,7 +720,7 @@ setuptools.setup(
      # The BinaryDistribution argument triggers build_ext.
      distclass=BinaryDistribution,
      install_requires=setup_spec.install_requires,
@@ -116,5 +113,5 @@ index c79802f19..2994d89a7 100644
      entry_points={
          "console_scripts": [
 -- 
-2.34.1
+2.23.0
 
