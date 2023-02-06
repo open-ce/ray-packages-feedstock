@@ -1,6 +1,8 @@
 #!/bin/bash
 set -xe
 
+source open-ce-common-utils.sh
+
 cd python/
 export SKIP_THIRDPARTY_INSTALL=1
 "${PYTHON}" setup.py build
@@ -15,6 +17,11 @@ grep -lR ELF build/ | xargs chmod +w
 # now clean everything up so subsequent builds (for potentially
 # different Python version) do not stumble on some after-effects
 "${PYTHON}" setup.py clean --all
-bazel "--output_user_root=$SRC_DIR/../bazel-root" "--output_base=$SRC_DIR/../b-o" clean
-bazel "--output_user_root=$SRC_DIR/../bazel-root" "--output_base=$SRC_DIR/../b-o" shutdown
+#bazel "--output_user_root=$SRC_DIR/../bazel-root" "--output_base=$SRC_DIR/../b-o" clean
+#bazel "--output_user_root=$SRC_DIR/../bazel-root" "--output_base=$SRC_DIR/../b-o" shutdown
+
+PID=$(bazel info server_pid)
+echo "PID: $PID"
+cleanup_bazel $PID
+
 rm -rf "$SRC_DIR/../b-o" "$SRC_DIR/../bazel-root"
