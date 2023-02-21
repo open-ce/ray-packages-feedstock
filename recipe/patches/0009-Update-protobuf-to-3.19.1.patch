@@ -1,7 +1,7 @@
-From 1a0985f8c048be7507d85fa08dd1c440f834238b Mon Sep 17 00:00:00 2001
-From: Archana Shinde1 <archana.shinde2504@gmail.com>
-Date: Thu, 16 Feb 2023 06:24:30 +0000
-Subject: [PATCH] Update protobuf to 3.19.6
+From 7197e0bbbeff04496a95436546710a96aa2b92bd Mon Sep 17 00:00:00 2001
+From: Nishidha Panpaliya <npanpa23@in.ibm.com>
+Date: Tue, 21 Feb 2023 01:28:44 -0500
+Subject: [PATCH 7/7] Updated Protobuf to 3.19
 
 ---
  bazel/ray_deps_setup.bzl          |  7 ++--
@@ -9,10 +9,10 @@ Subject: [PATCH] Update protobuf to 3.19.6
  2 files changed, 62 insertions(+), 3 deletions(-)
  create mode 100644 thirdparty/patches/protobuf.patch
 
-diff --git bazel/ray_deps_setup.bzl bazel/ray_deps_setup.bzl
-index 1e7d77fd0..982fc92a7 100644
---- bazel/ray_deps_setup.bzl
-+++ bazel/ray_deps_setup.bzl
+diff --git a/bazel/ray_deps_setup.bzl b/bazel/ray_deps_setup.bzl
+index 4b332b094..c950039bd 100644
+--- a/bazel/ray_deps_setup.bzl
++++ b/bazel/ray_deps_setup.bzl
 @@ -88,9 +88,10 @@ def ray_deps_setup():
      # https://github.com/ray-project/ray/issues/14117
      http_archive(
@@ -27,11 +27,11 @@ index 1e7d77fd0..982fc92a7 100644
      )
  
      # NOTE(lingxuan.zlx): 3rd party dependencies could be accessed, so it suggests
-diff --git thirdparty/patches/protobuf.patch thirdparty/patches/protobuf.patch
+diff --git a/thirdparty/patches/protobuf.patch b/thirdparty/patches/protobuf.patch
 new file mode 100644
 index 000000000..f4be271d3
 --- /dev/null
-+++ thirdparty/patches/protobuf.patch
++++ b/thirdparty/patches/protobuf.patch
 @@ -0,0 +1,58 @@
 +From 6bff868e60ff68422230fd0ae3cc1f3644a7ab8a Mon Sep 17 00:00:00 2001
 +From: Archana Shinde1 <archana.shinde2504@gmail.com>
@@ -92,5 +92,5 @@ index 000000000..f4be271d3
 +2.34.1
 +
 -- 
-2.34.1
+2.27.0
 
