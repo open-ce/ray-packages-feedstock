@@ -1,14 +1,14 @@
-From fb6ff59a683eee72bedff98d5c544a4226f83a3a Mon Sep 17 00:00:00 2001
-From: Nishidha Panpaliya <npanpa23@in.ibm.com>
-Date: Fri, 6 Jan 2023 02:18:58 -0500
-Subject: [PATCH 2/4] Remove all dependencies from setup.py
+From fd574872f5a89edd08abde610b14c77631a01793 Mon Sep 17 00:00:00 2001
+From: Nishidha Panpaliya <npanpa23in.ibm.com>
+Date: Mon, 10 Apr 2023 12:21:51 +0000
+Subject: [PATCH] Remove pip dependencies
 
 ---
  python/setup.py | 73 ++++++-------------------------------------------
  1 file changed, 9 insertions(+), 64 deletions(-)
 
 diff --git a/python/setup.py b/python/setup.py
-index e7d838a0c..655f92f40 100644
+index c9d9ae5749..077e838127 100644
 --- a/python/setup.py
 +++ b/python/setup.py
 @@ -224,34 +224,12 @@ if setup_spec.type == SetupType.RAY:
@@ -32,16 +32,16 @@ index e7d838a0c..655f92f40 100644
 -            "gpustat >= 1.0.0",  # for windows
 -            "opencensus",
 -            "pydantic",
--            "prometheus_client >= 0.7.1, < 0.14.0",
+-            "prometheus_client >= 0.7.1",
 -            "smart_open",
 -        ],
 -        "serve": ["uvicorn", "requests", "starlette", "fastapi", "aiorwlock"],
 -        "tune": ["pandas", "tabulate", "tensorboardX>=1.9", "requests"],
 -        "k8s": ["kubernetes", "urllib3"],
 -        "observability": [
--            "opentelemetry-api==1.1.0",
--            "opentelemetry-sdk==1.1.0",
--            "opentelemetry-exporter-otlp==1.1.0",
+-            "opentelemetry-api",
+-            "opentelemetry-sdk",
+-            "opentelemetry-exporter-otlp",
 -        ],
 +        "data": [],
 +        "default": [],
@@ -52,17 +52,14 @@ index e7d838a0c..655f92f40 100644
      }
  
      # Ray Serve depends on the Ray dashboard components.
-@@ -262,19 +240,7 @@ if setup_spec.type == SetupType.RAY:
+@@ -262,16 +240,7 @@ if setup_spec.type == SetupType.RAY:
      if RAY_EXTRA_CPP:
          setup_spec.extras["cpp"] = ["ray-cpp==" + setup_spec.version]
  
 -    setup_spec.extras["rllib"] = setup_spec.extras["tune"] + [
 -        "dm_tree",
--        "gym>=0.21.0,<0.24.0",
+-        "gymnasium==0.26.3",
 -        "lz4",
--        # matplotlib (dependency of scikit-image) 3.4.3 breaks docker build
--        # Todo: Remove this when safe?
--        "matplotlib!=3.4.3",
 -        "scikit-image",
 -        "pyyaml",
 -        "scipy",
@@ -73,7 +70,7 @@ index e7d838a0c..655f92f40 100644
  
      setup_spec.extras["train"] = setup_spec.extras["tune"]
  
-@@ -300,28 +266,7 @@ if setup_spec.type == SetupType.RAY:
+@@ -297,31 +266,7 @@ if setup_spec.type == SetupType.RAY:
  # install-core-prerelease-dependencies.sh so we can test
  # new releases candidates.
  if setup_spec.type == SetupType.RAY:
@@ -82,8 +79,11 @@ index e7d838a0c..655f92f40 100644
 -        "click >= 7.0",
 -        "dataclasses; python_version < '3.7'",
 -        "filelock",
--        "grpcio >= 1.32.0; python_version < '3.10'",
--        "grpcio >= 1.42.0; python_version >= '3.10'",
+-        # Tracking issue: https://github.com/ray-project/ray/issues/30984
+-        "grpcio >= 1.32.0, <= 1.49.1; python_version < '3.10' and sys_platform == 'darwin'",  # noqa
+-        "grpcio >= 1.42.0, <= 1.49.1; python_version >= '3.10' and sys_platform == 'darwin'",  # noqa
+-        "grpcio >= 1.32.0; python_version < '3.10' and sys_platform != 'darwin'",
+-        "grpcio >= 1.42.0; python_version >= '3.10' and sys_platform != 'darwin'",
 -        "jsonschema",
 -        "msgpack >= 1.0.0, < 2.0.0",
 -        "numpy >= 1.16; python_version < '3.9'",
@@ -107,11 +107,11 @@ index e7d838a0c..655f92f40 100644
      # The BinaryDistribution argument triggers build_ext.
      distclass=BinaryDistribution,
      install_requires=setup_spec.install_requires,
--    setup_requires=["cython >= 0.29.26", "wheel"],
+-    setup_requires=["cython >= 0.29.32", "wheel"],
 +    setup_requires=[],
      extras_require=setup_spec.extras,
      entry_points={
          "console_scripts": [
 -- 
-2.23.0
+2.34.1
 
