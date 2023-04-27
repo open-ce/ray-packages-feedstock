@@ -1,17 +1,17 @@
-From fd574872f5a89edd08abde610b14c77631a01793 Mon Sep 17 00:00:00 2001
-From: Nishidha Panpaliya <npanpa23in.ibm.com>
-Date: Mon, 10 Apr 2023 12:21:51 +0000
-Subject: [PATCH] Remove pip dependencies
+From 702cb1f280fac0ce6d94dab6662c7662610a5848 Mon Sep 17 00:00:00 2001
+From: Nishidha Panpaliya <npanpa23@in.ibm.com>
+Date: Thu, 27 Apr 2023 11:32:08 -0400
+Subject: [PATCH] Remove all depeendencies
 
 ---
- python/setup.py | 73 ++++++-------------------------------------------
- 1 file changed, 9 insertions(+), 64 deletions(-)
+ python/setup.py | 74 ++++++-------------------------------------------
+ 1 file changed, 9 insertions(+), 65 deletions(-)
 
 diff --git a/python/setup.py b/python/setup.py
-index c9d9ae5749..077e838127 100644
+index 0b1134f93b..32a93d01ba 100644
 --- a/python/setup.py
 +++ b/python/setup.py
-@@ -224,34 +224,12 @@ if setup_spec.type == SetupType.RAY:
+@@ -240,34 +240,12 @@ if setup_spec.type == SetupType.RAY:
          # Serialization workaround for pyarrow 7.0.0+ doesn't work for Windows.
          pyarrow_dep = "pyarrow >= 6.0.1, < 7.0.0"
      setup_spec.extras = {
@@ -52,7 +52,7 @@ index c9d9ae5749..077e838127 100644
      }
  
      # Ray Serve depends on the Ray dashboard components.
-@@ -262,16 +240,7 @@ if setup_spec.type == SetupType.RAY:
+@@ -278,16 +256,7 @@ if setup_spec.type == SetupType.RAY:
      if RAY_EXTRA_CPP:
          setup_spec.extras["cpp"] = ["ray-cpp==" + setup_spec.version]
  
@@ -70,7 +70,7 @@ index c9d9ae5749..077e838127 100644
  
      setup_spec.extras["train"] = setup_spec.extras["tune"]
  
-@@ -297,31 +266,7 @@ if setup_spec.type == SetupType.RAY:
+@@ -313,32 +282,7 @@ if setup_spec.type == SetupType.RAY:
  # install-core-prerelease-dependencies.sh so we can test
  # new releases candidates.
  if setup_spec.type == SetupType.RAY:
@@ -80,10 +80,11 @@ index c9d9ae5749..077e838127 100644
 -        "dataclasses; python_version < '3.7'",
 -        "filelock",
 -        # Tracking issue: https://github.com/ray-project/ray/issues/30984
--        "grpcio >= 1.32.0, <= 1.49.1; python_version < '3.10' and sys_platform == 'darwin'",  # noqa
--        "grpcio >= 1.42.0, <= 1.49.1; python_version >= '3.10' and sys_platform == 'darwin'",  # noqa
--        "grpcio >= 1.32.0; python_version < '3.10' and sys_platform != 'darwin'",
--        "grpcio >= 1.42.0; python_version >= '3.10' and sys_platform != 'darwin'",
+-        "grpcio >= 1.32.0, <= 1.49.1; python_version < '3.10' and sys_platform == 'darwin'",  # noqa:E501
+-        "grpcio >= 1.42.0, <= 1.49.1; python_version >= '3.10' and sys_platform == 'darwin'",  # noqa:E501
+-        # Original issue: https://github.com/ray-project/ray/issues/33833
+-        "grpcio >= 1.32.0, <= 1.51.3; python_version < '3.10' and sys_platform != 'darwin'",  # noqa:E501
+-        "grpcio >= 1.42.0, <= 1.51.3; python_version >= '3.10' and sys_platform != 'darwin'",  # noqa:E501
 -        "jsonschema",
 -        "msgpack >= 1.0.0, < 2.0.0",
 -        "numpy >= 1.16; python_version < '3.9'",
@@ -97,13 +98,13 @@ index c9d9ae5749..077e838127 100644
 -        # Light weight requirement, can be replaced with "typing" once
 -        # we deprecate Python 3.7 (this will take a while).
 -        "typing_extensions; python_version < '3.8'",
--        "virtualenv>=20.0.24",  # For pip runtime env.
+-        "virtualenv >=20.0.24, < 20.21.1",  # For pip runtime env.
 -    ]
 +    setup_spec.install_requires = []
  
  
  def is_native_windows_or_msys():
-@@ -775,7 +720,7 @@ setuptools.setup(
+@@ -792,7 +736,7 @@ setuptools.setup(
      # The BinaryDistribution argument triggers build_ext.
      distclass=BinaryDistribution,
      install_requires=setup_spec.install_requires,
@@ -113,5 +114,5 @@ index c9d9ae5749..077e838127 100644
      entry_points={
          "console_scripts": [
 -- 
-2.34.1
+2.31.1
 
