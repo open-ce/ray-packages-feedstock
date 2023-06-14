@@ -1,4 +1,4 @@
-{% set version = "2.4.0" %}
+{% set version = "2.5.0" %}
 
 package:
   name: ray-packages
@@ -260,6 +260,7 @@ outputs:
         - {{ pin_subpackage('ray-default', exact=True) }}
         - pandas
         - requests {{ requests }}
+        - pyarrow {{ arrow }}
         - tabulate
         - tensorboardX >=1.9
     test:

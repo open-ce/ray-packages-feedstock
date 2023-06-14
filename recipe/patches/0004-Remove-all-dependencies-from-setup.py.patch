@@ -1,17 +1,17 @@
-From 702cb1f280fac0ce6d94dab6662c7662610a5848 Mon Sep 17 00:00:00 2001
+From 87bb041ec33322ce8281502370d4b3451cd9a7fd Mon Sep 17 00:00:00 2001
 From: Nishidha Panpaliya <npanpa23@in.ibm.com>
-Date: Thu, 27 Apr 2023 11:32:08 -0400
-Subject: [PATCH] Remove all depeendencies
+Date: Fri, 9 Jun 2023 06:18:56 +0000
+Subject: [PATCH] Remove all dependencies from setup.py
 
 ---
  python/setup.py | 74 ++++++-------------------------------------------
  1 file changed, 9 insertions(+), 65 deletions(-)
 
 diff --git a/python/setup.py b/python/setup.py
-index 0b1134f93b..32a93d01ba 100644
+index c3ba3334b8..6b63bbcfec 100644
 --- a/python/setup.py
 +++ b/python/setup.py
-@@ -240,34 +240,12 @@ if setup_spec.type == SetupType.RAY:
+@@ -236,35 +236,12 @@ if setup_spec.type == SetupType.RAY:
          # Serialization workaround for pyarrow 7.0.0+ doesn't work for Windows.
          pyarrow_dep = "pyarrow >= 6.0.1, < 7.0.0"
      setup_spec.extras = {
@@ -34,9 +34,10 @@ index 0b1134f93b..32a93d01ba 100644
 -            "pydantic",
 -            "prometheus_client >= 0.7.1",
 -            "smart_open",
+-            "virtualenv >=20.0.24, < 20.21.1",  # For pip runtime env.
 -        ],
 -        "serve": ["uvicorn", "requests", "starlette", "fastapi", "aiorwlock"],
--        "tune": ["pandas", "tabulate", "tensorboardX>=1.9", "requests"],
+-        "tune": ["pandas", "tensorboardX>=1.9", "requests", pyarrow_dep],
 -        "k8s": ["kubernetes", "urllib3"],
 -        "observability": [
 -            "opentelemetry-api",
@@ -52,7 +53,7 @@ index 0b1134f93b..32a93d01ba 100644
      }
  
      # Ray Serve depends on the Ray dashboard components.
-@@ -278,16 +256,7 @@ if setup_spec.type == SetupType.RAY:
+@@ -275,16 +252,7 @@ if setup_spec.type == SetupType.RAY:
      if RAY_EXTRA_CPP:
          setup_spec.extras["cpp"] = ["ray-cpp==" + setup_spec.version]
  
@@ -70,7 +71,7 @@ index 0b1134f93b..32a93d01ba 100644
  
      setup_spec.extras["train"] = setup_spec.extras["tune"]
  
-@@ -313,32 +282,7 @@ if setup_spec.type == SetupType.RAY:
+@@ -310,31 +278,7 @@ if setup_spec.type == SetupType.RAY:
  # install-core-prerelease-dependencies.sh so we can test
  # new releases candidates.
  if setup_spec.type == SetupType.RAY:
@@ -89,7 +90,7 @@ index 0b1134f93b..32a93d01ba 100644
 -        "msgpack >= 1.0.0, < 2.0.0",
 -        "numpy >= 1.16; python_version < '3.9'",
 -        "numpy >= 1.19.3; python_version >= '3.9'",
--        "packaging; python_version >= '3.10'",
+-        "packaging",
 -        "protobuf >= 3.15.3, != 3.19.5",
 -        "pyyaml",
 -        "aiosignal",
@@ -98,13 +99,12 @@ index 0b1134f93b..32a93d01ba 100644
 -        # Light weight requirement, can be replaced with "typing" once
 -        # we deprecate Python 3.7 (this will take a while).
 -        "typing_extensions; python_version < '3.8'",
--        "virtualenv >=20.0.24, < 20.21.1",  # For pip runtime env.
 -    ]
 +    setup_spec.install_requires = []
  
  
  def is_native_windows_or_msys():
-@@ -792,7 +736,7 @@ setuptools.setup(
+@@ -795,7 +739,7 @@ setuptools.setup(
      # The BinaryDistribution argument triggers build_ext.
      distclass=BinaryDistribution,
      install_requires=setup_spec.install_requires,
@@ -114,5 +114,5 @@ index 0b1134f93b..32a93d01ba 100644
      entry_points={
          "console_scripts": [
 -- 
-2.31.1
+2.34.1
 
