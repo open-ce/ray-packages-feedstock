@@ -81,7 +81,7 @@ outputs:
         - grpcio {{ grpcio }}
         - msgpack-python >=1.0.0
         - numpy {{ numpy }}
-        - packaging    #[py >= 310]
+        - packaging
         - protobuf {{ protobuf }}
         - psutil {{ psutil }}
         - pyyaml {{ pyyaml }}
