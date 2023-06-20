@@ -1,4 +1,4 @@
-{% set version = "2.4.0" %}
+{% set version = "2.5.0" %}
 
 package:
   name: ray-packages
@@ -81,7 +81,7 @@ outputs:
         - grpcio {{ grpcio }}
         - msgpack-python >=1.0.0
         - numpy {{ numpy }}
-        - packaging    #[py >= 310]
+        - packaging
         - protobuf {{ protobuf }}
         - psutil {{ psutil }}
         - pyyaml {{ pyyaml }}
@@ -260,6 +260,7 @@ outputs:
         - {{ pin_subpackage('ray-default', exact=True) }}
         - pandas
         - requests {{ requests }}
+        - pyarrow {{ arrow }}
         - tabulate
         - tensorboardX >=1.9
     test:
