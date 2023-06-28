@@ -17,6 +17,7 @@ source:
     - patches/0010-Use-rules_perl-which-is-fixed-for-ppc.patch
     - patches/0011-Fixed-compilation-error.patch
     - patches/0012-Changed-min-bazel-version-to-5.3.patch
+    - patches/0013-Added-patch-for-rules_python-on-ppc64le.patch    #[ppc64le]
 
 build:
   number: 1
