@@ -1,0 +1,188 @@
+From 1f2207ee401b22a3cfc95d962a47b8941b8d9b09 Mon Sep 17 00:00:00 2001
+From: Nishidha Panpaliya <npanpa23@in.ibm.com>
+Date: Wed, 28 Jun 2023 14:10:51 -0400
+Subject: [PATCH] Add support of linux ppc64le
+
+---
+ WORKSPACE                                     |  19 ++-
+ .../0001-Add-support-of-linux-ppc64le.patch   | 131 ++++++++++++++++++
+ 2 files changed, 143 insertions(+), 7 deletions(-)
+ create mode 100644 thirdparty/patches/0001-Add-support-of-linux-ppc64le.patch
+
+diff --git a/WORKSPACE b/WORKSPACE
+index eb6aeba907..e8d744a8e8 100644
+--- a/WORKSPACE
++++ b/WORKSPACE
+@@ -7,6 +7,18 @@ ray_deps_setup()
+ 
+ load("//bazel:ray_deps_build_all.bzl", "ray_deps_build_all")
+ 
++http_archive(
++    name = "rules_python",
++    sha256 = "94750828b18044533e98a129003b6a68001204038dc4749f40b195b24c38f49f",
++    strip_prefix = "rules_python-0.21.0",
++    url = "https://github.com/bazelbuild/rules_python/releases/download/0.21.0/rules_python-0.21.0.tar.gz",
++    patch_args = ["-p1"],
++    patches = [
++       "@com_github_ray_project_ray//thirdparty/patches:0001-Add-support-of-linux-ppc64le.patch",
++    ],
++)
++
++
+ ray_deps_build_all()
+ 
+ # This needs to be run after grpc_deps() in ray_deps_build_all() to make
+@@ -31,13 +43,6 @@ load("@hedron_compile_commands//:workspace_setup.bzl", "hedron_compile_commands_
+ 
+ hedron_compile_commands_setup()
+ 
+-http_archive(
+-    name = "rules_python",
+-    sha256 = "94750828b18044533e98a129003b6a68001204038dc4749f40b195b24c38f49f",
+-    strip_prefix = "rules_python-0.21.0",
+-    url = "https://github.com/bazelbuild/rules_python/releases/download/0.21.0/rules_python-0.21.0.tar.gz",
+-)
+-
+ load("@rules_python//python:repositories.bzl", "python_register_toolchains")
+ 
+ python_register_toolchains(
+diff --git a/thirdparty/patches/0001-Add-support-of-linux-ppc64le.patch b/thirdparty/patches/0001-Add-support-of-linux-ppc64le.patch
+new file mode 100644
+index 0000000000..40822a2203
+--- /dev/null
++++ b/thirdparty/patches/0001-Add-support-of-linux-ppc64le.patch
+@@ -0,0 +1,131 @@
++From 6390b409b608cb8d295ae667c7d531ee8fdf92b0 Mon Sep 17 00:00:00 2001
++From: Nishidha Panpaliya <npanpa23@in.ibm.com>
++Date: Wed, 28 Jun 2023 14:10:00 -0400
++Subject: [PATCH] Add support of linux ppc64le
++
++---
++ python/versions.bzl | 56 +++++++++++++++++++++++++++++++++++++++++----
++ version.bzl         |  2 +-
++ 2 files changed, 52 insertions(+), 6 deletions(-)
++
++diff --git a/python/versions.bzl b/python/versions.bzl
++index 662f89d..1008084 100644
++--- a/python/versions.bzl
+++++ b/python/versions.bzl
++@@ -86,6 +86,17 @@ TOOL_VERSIONS = {
++         },
++         "strip_prefix": "python",
++     },
+++    "3.8.16": {
+++        "url": "20230507/cpython-{python_version}+20230507-{platform}-{build}.tar.gz",
+++        "sha256": {
+++            "aarch64-apple-darwin": "1e0a92d1a4f5e6d4a99f86b1cbf9773d703fe7fd032590f3e9c285c7a5eeb00a",
+++            "aarch64-unknown-linux-gnu": "886ab33ced13c84bf59ce8ff79eba6448365bfcafea1bf415bd1d75e21b690aa",
+++            "x86_64-apple-darwin": "70b57f28c2b5e1e3dd89f0d30edd5bc414e8b20195766cf328e1b26bed7890e1",
+++            "x86_64-pc-windows-msvc": "2fdc3fa1c95f982179bbbaedae2b328197658638799b6dcb63f9f494b0de59e2",
+++            "x86_64-unknown-linux-gnu": "8522b181c018e798ecb7dc54b5eedf7686cb258e6e33b3f7f0488ceb912a341e",
+++        },
+++        "strip_prefix": "python",
+++    },
++     "3.9.10": {
++         "url": "20220227/cpython-{python_version}+20220227-{platform}-{build}.tar.gz",
++         "sha256": {
++@@ -131,13 +142,14 @@ TOOL_VERSIONS = {
++         "strip_prefix": "python",
++     },
++     "3.9.16": {
++-        "url": "20230116/cpython-{python_version}+20230116-{platform}-{build}.tar.gz",
+++        "url": "20230507/cpython-{python_version}+20230507-{platform}-{build}.tar.gz",
++         "sha256": {
++             "aarch64-apple-darwin": "d732d212d42315ac27c6da3e0b69636737a8d72086c980daf844344c010cab80",
++             "aarch64-unknown-linux-gnu": "1ba520c0db431c84305677f56eb9a4254f5097430ed443e92fc8617f8fba973d",
++             "x86_64-apple-darwin": "3948384af5e8d4ee7e5ccc648322b99c1c5cf4979954ed5e6b3382c69d6db71e",
++             "x86_64-pc-windows-msvc": "5274afd6b7ff2bddbd8306385ffb2336764b0e58535db968daeac656246f59a8",
++-            "x86_64-unknown-linux-gnu": "7ba397787932393e65fc2fb9fcfabf54f2bb6751d5da2b45913cb25b2d493758",
+++            "x86_64-unknown-linux-gnu": "2b6e146234a4ef2a8946081fc3fbfffe0765b80b690425a49ebe40b47c33445b",
+++            "ppc64le-unknown-linux-gnu": "ff3ac35c58f67839aff9b5185a976abd3d1abbe61af02089f7105e876c1fe284",
++         },
++         "strip_prefix": "python",
++     },
++@@ -196,6 +208,19 @@ TOOL_VERSIONS = {
++         },
++         "strip_prefix": "python",
++     },
+++    "3.10.11": {
+++        "url": "20230507/cpython-{python_version}+20230507-{platform}-{build}.tar.gz",
+++        "sha256": {
+++            "aarch64-apple-darwin": "018d05a779b2de7a476f3b3ff2d10f503d69d14efcedd0774e6dab8c22ef84ff",
+++            "aarch64-unknown-linux-gnu": "2003750f40cd09d4bf7a850342613992f8d9454f03b3c067989911fb37e7a4d1",
+++            "x86_64-apple-darwin": "0e685f98dce0e5bc8da93c7081f4e6c10219792e223e4b5886730fd73a7ba4c6",
+++            "x86_64-pc-windows-msvc": "59c6970cecb357dc1d8554bd0540eb81ee7f6d16a07acf3d14ed294ece02c035",
+++            "x86_64-unknown-linux-gnu": "c5bcaac91bc80bfc29cf510669ecad12d506035ecb3ad85ef213416d54aecd79",
+++            "ppc64le-unknown-linux-gnu": "73a9d4c89ed51be39dd2de4e235078281087283e9fdedef65bec02f503e906ee",
+++        },
+++        "strip_prefix": "python",
+++    },
+++
++     "3.11.1": {
++         "url": "20230116/cpython-{python_version}+20230116-{platform}-{build}.tar.gz",
++         "sha256": {
++@@ -207,14 +232,26 @@ TOOL_VERSIONS = {
++         },
++         "strip_prefix": "python",
++     },
+++    "3.11.3": {
+++        "url": "20230507/cpython-{python_version}+20230507-{platform}-{build}.tar.gz",
+++        "sha256": {
+++            "aarch64-apple-darwin": "4918cdf1cab742a90f85318f88b8122aeaa2d04705803c7b6e78e81a3dd40f80",
+++            "aarch64-unknown-linux-gnu": "debf15783bdcb5530504f533d33fda75a7b905cec5361ae8f33da5ba6599f8b4",
+++            "x86_64-apple-darwin": "20a4203d069dc9b710f70b09e7da2ce6f473d6b1110f9535fb6f4c469ed54733",
+++            "x86_64-pc-windows-msvc": "edc08979cb0666a597466176511529c049a6f0bba8adf70df441708f766de5bf",
+++            "x86_64-unknown-linux-gnu": "da50b87d1ec42b3cb577dfd22a3655e43a53150f4f98a4bfb40757c9d7839ab5",
+++            "ppc64le-unknown-linux-gnu": "767d24f3570b35fedb945f5ac66224c8983f2d556ab83c5cfaa5f3666e9c212c",
+++        },
+++        "strip_prefix": "python",
+++    },
++ }
++ 
++ # buildifier: disable=unsorted-dict-items
++ MINOR_MAPPING = {
++-    "3.8": "3.8.15",
+++    "3.8": "3.8.16",
++     "3.9": "3.9.16",
++-    "3.10": "3.10.9",
++-    "3.11": "3.11.1",
+++    "3.10": "3.10.11",
+++    "3.11": "3.11.3",
++ }
++ 
++ PLATFORMS = {
++@@ -263,6 +300,15 @@ PLATFORMS = {
++         os_name = LINUX_NAME,
++         arch = "x86_64",
++     ),
+++    "ppc64le-unknown-linux-gnu": struct(
+++        compatible_with = [
+++            "@platforms//os:linux",
+++            "@platforms//cpu:ppc",
+++        ],
+++        os_name = LINUX_NAME,
+++        arch = "ppc64le",
+++    ),
+++
++ }
++ 
++ def get_release_info(platform, python_version, base_url = DEFAULT_RELEASE_BASE_URL, tool_versions = TOOL_VERSIONS):
++diff --git a/version.bzl b/version.bzl
++index 8c7f01c..922d903 100644
++--- a/version.bzl
+++++ b/version.bzl
++@@ -21,7 +21,7 @@ BAZEL_VERSION = "6.0.0"
++ 
++ # NOTE: Keep in sync with .bazelci/presubmit.yml
++ # This is the minimum supported bazel version, that we have some tests for.
++-MINIMUM_BAZEL_VERSION = "5.4.0"
+++MINIMUM_BAZEL_VERSION = "5.3.0"
++ 
++ # Versions of Bazel which users should be able to use.
++ # Ensures we don't break backwards-compatibility,
++-- 
++2.31.1
++
+-- 
+2.31.1
+
