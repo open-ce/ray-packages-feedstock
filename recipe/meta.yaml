@@ -1,4 +1,4 @@
-{% set version = "2.5.0" %}
+{% set version = "2.6.3" %}
 
 package:
   name: ray-packages
@@ -13,7 +13,6 @@ source:
     - patches/0004-Remove-all-dependencies-from-setup.py.patch
     - patches/0005-Ignore-warnings-in-event.cc-and-logging.cc.patch
     - patches/0006-Add-bazel-linkopts-libs.patch
- #   - patches/0009-Update-protobuf-to-3.19.1.patch    #[protobuf == "3.19.*"]
     - patches/0010-Use-rules_perl-which-is-fixed-for-ppc.patch
     - patches/0011-Fixed-compilation-error.patch
     - patches/0012-Changed-min-bazel-version-to-5.3.patch
@@ -21,7 +20,7 @@ source:
     - patches/0014-allow-builds-with-root-user.patch    #[ppc64le]
 
 build:
-  number: 3
+  number: 1
 
 # Need these up here for conda-smithy to handle them properly.
 requirements:
@@ -39,7 +38,7 @@ outputs:
         - {{ pin_subpackage('ray-air', exact=True) }}
         - ray-dashboard =={{ version }}=*_{{ PKG_BUILDNUM }}
         - {{ pin_subpackage('ray-default', exact=True) }}
-        - {{ pin_subpackage('ray-k8s', exact=True) }}
+        - {{ pin_subpackage('ray-client', exact=True) }}
         - {{ pin_subpackage('ray-data', exact=True) }}
         - {{ pin_subpackage('ray-rllib', exact=True) }}
         - {{ pin_subpackage('ray-serve', exact=True) }}
@@ -59,11 +58,15 @@ outputs:
         - {{ compiler('cxx') }}   # [ ppc_arch != "p10"]
         - bazel {{ bazel }}
         - sysroot_linux-64 2.17  # [linux64]
+        - patchelf
+        - colorama
         - curl
         - cython >=0.29.32
         - make
         - m2-bash  # [win]
+        - psutil
         - python {{ python }}
+        - setproctitle ==1.2.2
       host:
         - python {{ python }}
         - pip
@@ -75,7 +78,6 @@ outputs:
       run:
         - python {{ python }}
         - aiosignal
-        - attrs {{ attrs }}
         - click {{ click }}
         - colorama
         - filelock
@@ -88,9 +90,8 @@ outputs:
         - psutil {{ psutil }}
         - pyyaml {{ pyyaml }}
         - jsonschema
-        - setproctitle =1.2.2
+        - setproctitle ==1.2.2
         - requests {{ requests }}
-        - virtualenv
 
     test:
       imports:
@@ -139,6 +140,7 @@ outputs:
         - smart_open
         - py-spy >=0.2.0
         - pydantic
+        - virtualenv >=20.0.24,<20.21.1
 
     test:
       imports:
@@ -175,7 +177,7 @@ outputs:
       commands:
         - python -c "import ray; ray.init(include_dashboard=True)"
 
-  - name: ray-k8s
+  - name: ray-client
     requirements:
       host:
         - python {{ python }}
@@ -241,7 +243,7 @@ outputs:
       run:
         - python {{ python }}
         - {{ pin_subpackage('ray-default', exact=True) }}
-        - uvicorn 0.16.0
+        - uvicorn
         - requests {{ requests }}
         - starlette {{ starlette }}
         - fastapi
@@ -263,7 +265,6 @@ outputs:
         - pandas
         - requests {{ requests }}
         - pyarrow {{ arrow }}
-        - tabulate
         - tensorboardX >=1.9
     test:
       imports:
