@@ -1,25 +1,26 @@
-From d260ac866e10234b9c2b530837b4f6bac494ae49 Mon Sep 17 00:00:00 2001
-From: Nishidha Panpaliya <npanpa23@in.ibm.com>
-Date: Mon, 16 Jan 2023 06:53:18 +0000
+From 7393318dada78a94e6f1963367e4cc041c343030 Mon Sep 17 00:00:00 2001
+From: Deepali Chourasia <deepch23@in.ibm.com>
+Date: Fri, 25 Aug 2023 13:19:32 +0000
 Subject: [PATCH] Use rules_perl which is fixed for ppc
 
 ---
- bazel/ray_deps_setup.bzl | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ bazel/ray_deps_setup.bzl | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/bazel/ray_deps_setup.bzl b/bazel/ray_deps_setup.bzl
-index 90bb78641..a0baf3251 100644
+index ce5bd7f23a..182901ad83 100644
 --- a/bazel/ray_deps_setup.bzl
 +++ b/bazel/ray_deps_setup.bzl
-@@ -264,10 +264,11 @@ def ray_deps_setup():
-         url = "https://github.com/bazelbuild/rules_foreign_cc/archive/refs/tags/0.9.0.tar.gz",
-     )
+@@ -259,11 +259,11 @@ def ray_deps_setup():
  
+     # Using shallow_since allows the rule to clone down fewer commits.
+     # Reference:  https://bazel.build/rules/lib/repo/git
 -    git_repository(
 +    http_archive(
          name = "rules_perl",
 -        remote = "https://github.com/bazelbuild/rules_perl.git",
 -        commit = "022b8daf2bb4836ac7a50e4a1d8ea056a3e1e403",
+-        shallow_since = "1663780239 -0700",
 +        sha256 = "0ec55ebafbfe7ae091dca3a7135c2250e27077668683682730d5348daa9c25f2",
 +        strip_prefix = "rules_perl-ebd65464923e570846f53a4e73c0789e2abdf45a",
 +        url = "https://github.com/npanpaliya/rules_perl/archive/ebd65464923e570846f53a4e73c0789e2abdf45a.tar.gz",
