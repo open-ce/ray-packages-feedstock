@@ -245,7 +245,7 @@ outputs:
         - {{ pin_subpackage('ray-default', exact=True) }}
         - uvicorn
         - requests {{ requests }}
-        - starlette {{ starlette }}
+        - starlette 0.25.0
         - fastapi
         - aiorwlock
     test:

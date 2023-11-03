@@ -13,4 +13,4 @@ cxx_compiler:                                   # [win]
 - vs2019                                        # [win]
 
 nodejs:
-- '14'
+- '18'
