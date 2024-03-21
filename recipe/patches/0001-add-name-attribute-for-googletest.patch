@@ -1,0 +1,24 @@
+From 84b18ff1a2b5c6b83e6763425d428d7a40b4230a Mon Sep 17 00:00:00 2001
+From: ArchanaShinde1 <archana.shinde2504@gmail.com>
+Date: Wed, 13 Mar 2024 07:06:58 +0000
+Subject: [PATCH] add name attribute for googletest
+
+---
+ bazel/ray_deps_setup.bzl | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/bazel/ray_deps_setup.bzl b/bazel/ray_deps_setup.bzl
+index f91eb303c4..25e2d412c1 100644
+--- a/bazel/ray_deps_setup.bzl
++++ b/bazel/ray_deps_setup.bzl
+@@ -173,6 +173,7 @@ def ray_deps_setup():
+     )
+ 
+     auto_http_archive(
++        name = "com_google_googletest",
+         url = "https://github.com/google/googletest/archive/refs/tags/v1.13.0.tar.gz",
+         sha256 = "ad7fdba11ea011c1d925b3289cf4af2c66a352e18d4c7264392fead75e919363",
+     )
+-- 
+2.40.1
+

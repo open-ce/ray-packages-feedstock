@@ -1,0 +1,136 @@
+From 5c3f2351d56eb1acf6b413d26e0b51258cf67c28 Mon Sep 17 00:00:00 2001
+From: ArchanaShinde1 <archana.shinde2504@gmail.com>
+Date: Mon, 11 Mar 2024 11:36:04 +0000
+Subject: [PATCH 9/9] fixed grpc issue
+
+---
+ bazel/ray_deps_setup.bzl                   | 20 +++++------
+ thirdparty/patches/grpc-cython-copts.patch | 42 +++++++++++++++-------
+ 2 files changed, 40 insertions(+), 22 deletions(-)
+
+diff --git a/bazel/ray_deps_setup.bzl b/bazel/ray_deps_setup.bzl
+index ce6b9d9a08..f01db1d1ec 100644
+--- a/bazel/ray_deps_setup.bzl
++++ b/bazel/ray_deps_setup.bzl
+@@ -89,11 +89,11 @@ def ray_deps_setup():
+     # This is copied from grpc's bazel/grpc_deps.bzl
+     http_archive(
+         name = "com_google_protobuf",
+-        sha256 = "76a33e2136f23971ce46c72fd697cd94dc9f73d56ab23b753c3e16854c90ddfd",
+-        strip_prefix = "protobuf-2c5fa078d8e86e5f4bd34e6f4c9ea9e8d7d4d44a",
++        sha256 = "d594b561fb41bf243233d8f411c7f2b7d913e5c9c1be4ca439baf7e48384c893",
++        strip_prefix = "protobuf-f0dc78d7e6e331b8c6bb2d5283e06aa26883ca7c",
+         urls = [
+-            # https://github.com/protocolbuffers/protobuf/commits/v23.4
+-            "https://github.com/protocolbuffers/protobuf/archive/2c5fa078d8e86e5f4bd34e6f4c9ea9e8d7d4d44a.tar.gz",
++            # https://github.com/protocolbuffers/protobuf/commits/v21.12
++            "https://github.com/protocolbuffers/protobuf/archive/f0dc78d7e6e331b8c6bb2d5283e06aa26883ca7c.tar.gz",
+         ],
+         patches = [
+             "@com_github_grpc_grpc//third_party:protobuf.patch",
+@@ -235,8 +235,8 @@ def ray_deps_setup():
+     auto_http_archive(
+         name = "com_github_grpc_grpc",
+         # NOTE: If you update this, also update @boringssl's hash.
+-        url = "https://github.com/grpc/grpc/archive/refs/tags/v1.57.1.tar.gz",
+-        sha256 = "0762f809b9de845e6a7c809cabccad6aa4143479fd43b396611fe5a086c0aeeb",
++        url = "https://github.com/grpc/grpc/archive/refs/tags/v1.54.3.tar.gz",
++        sha256 = "17e4e1b100657b88027721220cbfb694d86c4b807e9257eaf2fb2d273b41b1b1",
+         patches = [
+             "@com_github_ray_project_ray//thirdparty/patches:grpc-cython-copts.patch",
+         ],
+@@ -278,13 +278,13 @@ def ray_deps_setup():
+     http_archive(
+         # This rule is used by @com_github_grpc_grpc, and using a GitHub mirror
+         # provides a deterministic archive hash for caching. Explanation here:
+-        # https://github.com/grpc/grpc/blob/1ff1feaa83e071d87c07827b0a317ffac673794f/bazel/grpc_deps.bzl#L189
++        # https://github.com/grpc/grpc/blob/v1.54.3/bazel/grpc_deps.bzl#L226
+         # Ensure this rule matches the rule used by grpc's bazel/grpc_deps.bzl
+         name = "boringssl",
+-        sha256 = "0675a4f86ce5e959703425d6f9063eaadf6b61b7f3399e77a154c0e85bad46b1",
+-        strip_prefix = "boringssl-342e805bc1f5dfdd650e3f031686d6c939b095d9",
++        sha256 = "a8b2c40d5223ca951d463ed73dd810836dccdafd8f948db6fb4fb709b9827ab5",
++        strip_prefix = "boringssl-8872d958b7b07173bf29b8f3b8bf36a1ca8c94a3",
+         urls = [
+-            "https://github.com/google/boringssl/archive/342e805bc1f5dfdd650e3f031686d6c939b095d9.tar.gz",
++            "https://github.com/google/boringssl/archive/8872d958b7b07173bf29b8f3b8bf36a1ca8c94a3.tar.gz",
+         ],
+     )
+ 
+diff --git a/thirdparty/patches/grpc-cython-copts.patch b/thirdparty/patches/grpc-cython-copts.patch
+index c893cab1bd..5c3284b4ae 100644
+--- a/thirdparty/patches/grpc-cython-copts.patch
++++ b/thirdparty/patches/grpc-cython-copts.patch
+@@ -1,39 +1,57 @@
++From 81e22b706ff85e27d0cccd34ce271adeb53b85bb Mon Sep 17 00:00:00 2001
++From: ArchanaShinde1 <archana.shinde2504@gmail.com>
++Date: Mon, 11 Mar 2024 11:15:55 +0000
++Subject: [PATCH] grpc cython patched
++
++---
++ bazel/cython_library.bzl | 21 +++++++++++----------
++ 1 file changed, 11 insertions(+), 10 deletions(-)
++
+ diff --git bazel/cython_library.bzl bazel/cython_library.bzl
++index 8e003c2246..0bc35d503f 100644
+ --- bazel/cython_library.bzl
+ +++ bazel/cython_library.bzl
+-@@ -10,15 +10,16 @@
++@@ -19,18 +19,18 @@
++ # been written at cython/cython and tensorflow/tensorflow. We branch from
++ # Tensorflow's version as it is more actively maintained and works for gRPC
++ # Python's needs.
+ -def pyx_library(name, deps = [], py_deps = [], srcs = [], **kwargs):
+ +def pyx_library(name, deps = [], cc_kwargs = {}, py_deps = [], srcs = [], **kwargs):
+      """Compiles a group of .pyx / .pxd / .py files.
+-
++ 
+      First runs Cython to create .cpp files for each input .pyx or .py + .pxd
+ -    pair. Then builds a shared object for each, passing "deps" to each cc_binary
+ -    rule (includes Python headers by default). Finally, creates a py_library rule
+ -    with the shared objects and any pure Python "srcs", with py_deps as its
+ -    dependencies; the shared objects can be imported like normal Python files.
++-
+ +    pair. Then builds a shared object for each, passing "deps" and `**cc_kwargs`
+ +    to each cc_binary rule (includes Python headers by default). Finally, creates
+ +    a py_library rule with the shared objects and any pure Python "srcs", with py_deps
+ +    as its dependencies; the shared objects can be imported like normal Python files.
+-
+      Args:
+          name: Name for the rule.
+          deps: C/C++ dependencies of the Cython (e.g. Numpy headers).
+ +        cc_kwargs: cc_binary extra arguments such as copts, linkstatic, linkopts, features
+-@@ -57,7 +59,8 @@ def pyx_library(name, deps = [], py_deps = [], srcs = [], **kwargs):
+--        shared_object_name = stem + ".so"
+-+        shared_object_name = stem + ".so"
++         py_deps: Pure Python dependencies of the final library.
++         srcs: .py, .pyx, or .pxd files to either compile or pass through.
++         **kwargs: Extra keyword arguments passed to the py_library.
++@@ -69,10 +69,11 @@ def pyx_library(name, deps = [], py_deps = [], srcs = [], **kwargs):
++         stem = src.split(".")[0]
++         shared_object_name = stem + ".so"
+          native.cc_binary(
+ -            name = shared_object_name,
+-+            name = cc_kwargs.pop("name", shared_object_name),
+ -            srcs = [stem + ".cpp"],
+-+            srcs = [stem + ".cpp"] + cc_kwargs.pop("srcs", []),
+ -            deps = deps + ["@local_config_python//:python_headers"],
+-+            deps = deps + ["@local_config_python//:python_headers"] + cc_kwargs.pop("deps", []),
+--            defines = defines,
+-+            defines = defines,
+ -            linkshared = 1,
+++            name = cc_kwargs.pop("name", shared_object_name),
+++            srcs = [stem + ".cpp"] + cc_kwargs.pop("srcs", []),
+++            deps = deps + ["@local_config_python//:python_headers"] + cc_kwargs.pop("deps", []),
+ +            linkshared = cc_kwargs.pop("linkshared", 1),
+ +            **cc_kwargs
+          )
+---
++         shared_objects.append(shared_object_name)
++ 
++-- 
++2.40.1
++
+-- 
+2.40.1
+
