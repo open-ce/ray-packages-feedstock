@@ -9,8 +9,8 @@ source:
   git_rev: ray-{{ version }}
   patches:
     - patches/0001-add-name-attribute-for-googletest.patch
-    - patches/0001-patch-redis-for-ar-ranlib.patch
-    - patches/0001-Update-skylib-commit.patch
+    - patches/0002-patch-redis-for-ar-ranlib.patch
+    - patches/0007-Update-skylib-commit.patch
     - patches/0003-Disable-making-non-core-entry-scripts.patch
     - patches/0004-Remove-all-dependencies-from-setup.py.patch
     - patches/0005-Ignore-warnings-in-event.cc-and-logging.cc.patch
