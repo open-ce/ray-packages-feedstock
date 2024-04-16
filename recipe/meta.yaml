@@ -1,4 +1,4 @@
-{% set version = "2.6.3" %}
+{% set version = "2.9.2" %}
 
 package:
   name: ray-packages
@@ -8,16 +8,18 @@ source:
   git_url: https://github.com/ray-project/ray
   git_rev: ray-{{ version }}
   patches:
-    - patches/0002-Redis-deps-now-build-but-do-not-link.patch
+    - patches/0001-add-name-attribute-for-googletest.patch
+    - patches/0002-patch-redis-for-ar-ranlib.patch
+    - patches/0007-Update-skylib-commit.patch
     - patches/0003-Disable-making-non-core-entry-scripts.patch
     - patches/0004-Remove-all-dependencies-from-setup.py.patch
     - patches/0005-Ignore-warnings-in-event.cc-and-logging.cc.patch
     - patches/0006-Add-bazel-linkopts-libs.patch
+    - patches/0009-fixed-grpc-issue.patch
     - patches/0010-Use-rules_perl-which-is-fixed-for-ppc.patch
     - patches/0011-Fixed-compilation-error.patch
-    - patches/0012-Changed-min-bazel-version-to-5.3.patch
     - patches/0013-Added-patch-for-rules_python-on-ppc64le.patch    #[ppc64le]
-    - patches/0014-allow-builds-with-root-user.patch    #[ppc64le]
+#    - patches/0014-allow-builds-with-root-user.patch    #[ppc64le]
 
 build:
   number: 1
@@ -35,8 +37,8 @@ outputs:
         - python {{ python }}
       run:
         - python {{ python }}
+        - pydantic {{ pydantic }}
         - {{ pin_subpackage('ray-air', exact=True) }}
-        - ray-dashboard =={{ version }}=*_{{ PKG_BUILDNUM }}
         - {{ pin_subpackage('ray-default', exact=True) }}
         - {{ pin_subpackage('ray-client', exact=True) }}
         - {{ pin_subpackage('ray-data', exact=True) }}
@@ -110,6 +112,7 @@ outputs:
         - python {{ python }}
       run:
         - python {{ python }}
+        - fsspec {{ fsspec }}
         - {{ pin_subpackage('ray-data', exact=True) }}
         - {{ pin_subpackage('ray-serve', exact=True) }}
         - {{ pin_subpackage('ray-train', exact=True) }}
@@ -119,13 +122,16 @@ outputs:
         - ray.air
 
   - name: ray-default
+    script: build-default.sh  # [not win]
     requirements:
+      build:
+        - nodejs
       host:
+        - nodejs
         - python {{ python }}
       run: 
         - python {{ python }}
         - {{ pin_subpackage('ray-core', exact=True) }}
-        - ray-dashboard =={{ version }}=*_{{ PKG_BUILDNUM }}
         - aiohttp >=3.7
         - aiohttp-cors
         - colorful
@@ -133,13 +139,13 @@ outputs:
         # skip it there until gpustat is fixed as it is optional
         - gpustat # [not win]
         - jsonschema
-        - requests {{ requests }}
         - opencensus
         - prometheus_client >=0.7.1
         - requests {{ requests }}
         - smart_open
         - py-spy >=0.2.0
-        - pydantic
+        - pydantic {{ pydantic }}
+        - typing-extensions {{ typing_extensions }}
         - virtualenv >=20.0.24,<20.21.1
 
     test:
@@ -149,30 +155,6 @@ outputs:
         # init-code seemingly depends on platform or other ambient things;
         # the following doesn't get triggered in CI, but was a problem in
         # https://github.com/conda-forge/ray-packages-feedstock/issues/16
-        - ray._private.metrics_agent
-
-  - name: ray-dashboard
-    build:
-      script:
-        - cd python/ray/dashboard/client
-        - npm install
-        - npm ci
-        - npm run build
-        # not sure why this seems to get copied on windows but not linux...
-        - mkdir -p $SP_DIR/ray/dashboard/client             # [not win]
-        - cp -R ./build $SP_DIR/ray/dashboard/client/build  # [not win]
-    requirements:
-      build:
-        - nodejs
-      host:
-        - nodejs
-        - python {{ python }}
-      run:
-        - python {{ python }}
-        - {{ pin_subpackage('ray-core', exact=True) }}
-        - typing-extensions {{ typing_extensions }}
-    test:
-      imports:
         - ray.dashboard
       commands:
         - python -c "import ray; ray.init(include_dashboard=True)"
@@ -201,7 +183,7 @@ outputs:
         - pandas
         - numpy {{ numpy }}
         - pyarrow {{ arrow }}
-        - fsspec
+        - fsspec {{ fsspec }}
     test:
       imports:
         - ray.data
@@ -225,8 +207,13 @@ outputs:
         - tensorflow-base {{ tensorflow }}
         - keras {{ keras }}
         - rich
+        - openblas {{ openblas }}
         - typer
+        - ml_dtypes {{ ml_dtypes }}
     test:
+      requires:
+        - scipy {{ scipy }}
+        - openblas {{ openblas }}
       imports:
         - ray.rllib
       commands:
@@ -245,9 +232,10 @@ outputs:
         - {{ pin_subpackage('ray-default', exact=True) }}
         - uvicorn
         - requests {{ requests }}
-        - starlette 0.25.0
-        - fastapi
+        - starlette ==0.25.0
+        - fastapi ==0.92.0
         - aiorwlock
+        - fsspec {{ fsspec }}
     test:
       imports:
         - ray.serve
@@ -262,6 +250,7 @@ outputs:
       run:
         - python {{ python }}
         - {{ pin_subpackage('ray-default', exact=True) }}
+        - fsspec {{ fsspec }}
         - pandas
         - requests {{ requests }}
         - pyarrow {{ arrow }}
@@ -275,6 +264,7 @@ outputs:
       host:
         - python
       run:
+        - fsspec {{ fsspec }}
         - python
         - {{ pin_subpackage('ray-tune', exact=True) }}
     test:
