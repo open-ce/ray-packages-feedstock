@@ -1,3 +1,6 @@
+#!/bin/bash
+set -xe
+
 cd python/ray/dashboard/client
 npm install
 npm ci
