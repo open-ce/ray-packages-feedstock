@@ -219,7 +219,7 @@ outputs:
         - typer
         - ml_dtypes {{ ml_dtypes }}
     test:
-      required:
+      requires:
         - scipy {{ scipy }}
         - openblas {{ openblas }}
       imports:
