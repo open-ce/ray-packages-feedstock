@@ -1,0 +1,24 @@
+From 8c15b1f656e360de51f4eb3ece79a74507f3e51f Mon Sep 17 00:00:00 2001
+From: Nishidha Panpaliya <npanpa23@in.ibm.com>
+Date: Mon, 16 Jan 2023 12:38:56 +0000
+Subject: [PATCH] Fixed compilation error
+
+---
+ src/ray/util/util.cc | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/ray/util/util.cc b/src/ray/util/util.cc
+index fa42c7095..71391b8b3 100644
+--- a/src/ray/util/util.cc
++++ b/src/ray/util/util.cc
+@@ -24,6 +24,7 @@
+ #include <boost/asio/generic/stream_protocol.hpp>
+ #include <sstream>
+ #include <string>
++#include <iomanip>
+ #include <vector>
+ #ifndef _WIN32
+ #include <boost/asio/local/stream_protocol.hpp>
+-- 
+2.34.1
+

@@ -1,0 +1,66 @@
+From 191891cf9ead813a8b1d3562f24ba60595175173 Mon Sep 17 00:00:00 2001
+From: Archana-Shinde1 <Archana-Shinde1@ibm.com>
+Date: Tue, 9 Apr 2024 10:06:03 +0000
+Subject: [PATCH 12/12] Fixed boringssl issue
+
+---
+ bazel/ray_deps_setup.bzl                      |  9 ++++---
+ .../patches/Fixed-boringssl-issue.patch       | 25 +++++++++++++++++++
+ 2 files changed, 31 insertions(+), 3 deletions(-)
+ create mode 100644 thirdparty/patches/Fixed-boringssl-issue.patch
+
+diff --git a/bazel/ray_deps_setup.bzl b/bazel/ray_deps_setup.bzl
+index 0d88bada4c..d50dae8e42 100644
+--- a/bazel/ray_deps_setup.bzl
++++ b/bazel/ray_deps_setup.bzl
+@@ -282,10 +282,13 @@ def ray_deps_setup():
+         # https://github.com/grpc/grpc/blob/1ff1feaa83e071d87c07827b0a317ffac673794f/bazel/grpc_deps.bzl#L189
+         # Ensure this rule matches the rule used by grpc's bazel/grpc_deps.bzl
+         name = "boringssl",
+-        sha256 = "0675a4f86ce5e959703425d6f9063eaadf6b61b7f3399e77a154c0e85bad46b1",
+-        strip_prefix = "boringssl-342e805bc1f5dfdd650e3f031686d6c939b095d9",
++        sha256 = "a8b2c40d5223ca951d463ed73dd810836dccdafd8f948db6fb4fb709b9827ab5",
++        strip_prefix = "boringssl-8872d958b7b07173bf29b8f3b8bf36a1ca8c94a3",
+         urls = [
+-            "https://github.com/google/boringssl/archive/342e805bc1f5dfdd650e3f031686d6c939b095d9.tar.gz",
++            "https://github.com/google/boringssl/archive/8872d958b7b07173bf29b8f3b8bf36a1ca8c94a3.tar.gz",
++        ],
++        patches = [
++            "@com_github_ray_project_ray//thirdparty/patches:Fixed-boringssl-issue.patch",
+         ],
+     )
+ 
+diff --git a/thirdparty/patches/Fixed-boringssl-issue.patch b/thirdparty/patches/Fixed-boringssl-issue.patch
+new file mode 100644
+index 0000000000..d99fbb17cf
+--- /dev/null
++++ b/thirdparty/patches/Fixed-boringssl-issue.patch
+@@ -0,0 +1,25 @@
++From d51938b5733477d3cd133c2790ac07971d0c30ee Mon Sep 17 00:00:00 2001
++From: Archana-Shinde1 <Archana-Shinde1@ibm.com>
++Date: Tue, 9 Apr 2024 09:55:26 +0000
++Subject: [PATCH] Fixed boringssl issue
++
++---
++ src/include/openssl/base.h | 2 +-
++ 1 file changed, 1 insertion(+), 1 deletion(-)
++
++diff --git src/include/openssl/base.h src/include/openssl/base.h
++index a1a4309a4..8db692ea3 100644
++--- src/include/openssl/base.h
+++++ src/include/openssl/base.h
++@@ -121,7 +121,7 @@ extern "C" {
++ // little-endian architectures. Functions will not produce the correct answer
++ // on other systems. Run the crypto_test binary, notably
++ // crypto/compiler_test.cc, before adding a new architecture.
++-#error "Unknown target CPU"
+++#define OPENSSL_64_BIT
++ #endif
++ 
++ #if defined(__APPLE__)
++-- 
++2.40.1
++
+-- 
+2.40.1
+
