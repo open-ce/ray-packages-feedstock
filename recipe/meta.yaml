@@ -22,7 +22,7 @@ source:
     - patches/0011-grpc-change-only.patch       #[ppc64le]
     - patches/0012-Fixed-boringssl-issue.patch  #[ppc64le]
     - patches/0013-Added-patch-for-rules_python-on-ppc64le.patch    #[ppc64le]
-#    - patches/0014-allow-builds-with-root-user.patch    #[ppc64le]
+    - patches/0014-allow-builds-with-root-user.patch    #[ppc64le]
 
 build:
   number: 1
@@ -107,7 +107,7 @@ outputs:
         - ray._private.state
         - ray._private.worker
       commands:
-        - python -c "import ray; ray.init()"
+        - python -c "import ray; ray.init(ignore_reinit_error=True, num_cpus=4)"
 
   - name: ray-air
     requirements:
