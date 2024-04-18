@@ -160,7 +160,7 @@ outputs:
         # https://github.com/conda-forge/ray-packages-feedstock/issues/16
         - ray.dashboard
       commands:
-        - python -c "import ray; ray.init(include_dashboard=True)"
+        - python -c "import ray; ray.init(include_dashboard=True, ignore_reinit_error=True, num_cpus=4)"
 
   - name: ray-client
     requirements:
