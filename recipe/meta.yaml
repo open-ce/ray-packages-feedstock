@@ -15,14 +15,17 @@ source:
     - patches/0004-Remove-all-dependencies-from-setup.py.patch
     - patches/0005-Ignore-warnings-in-event.cc-and-logging.cc.patch
     - patches/0006-Add-bazel-linkopts-libs.patch
-    - patches/0009-fixed-grpc-issue.patch
+    - patches/0007-Update-skylib-commit.patch
+    - patches/0008-Fixed-compilation-error.patch
+    - patches/0009-fixed-grpc-issue.patch          #[x86_64]
     - patches/0010-Use-rules_perl-which-is-fixed-for-ppc.patch
-    - patches/0011-Fixed-compilation-error.patch
+    - patches/0011-grpc-change-only.patch       #[ppc64le]
+    - patches/0012-Fixed-boringssl-issue.patch  #[ppc64le]
     - patches/0013-Added-patch-for-rules_python-on-ppc64le.patch    #[ppc64le]
-#    - patches/0014-allow-builds-with-root-user.patch    #[ppc64le]
+    - patches/0014-allow-builds-with-root-user.patch    #[ppc64le]
 
 build:
-  number: 1
+  number: 2
 
 # Need these up here for conda-smithy to handle them properly.
 requirements:
@@ -104,7 +107,7 @@ outputs:
         - ray._private.state
         - ray._private.worker
       commands:
-        - python -c "import ray; ray.init()"
+        - python -c "import ray; ray.init(ignore_reinit_error=True, num_cpus=4)"
 
   - name: ray-air
     requirements:
@@ -157,7 +160,7 @@ outputs:
         # https://github.com/conda-forge/ray-packages-feedstock/issues/16
         - ray.dashboard
       commands:
-        - python -c "import ray; ray.init(include_dashboard=True)"
+        - python -c "import ray; ray.init(include_dashboard=True, ignore_reinit_error=True, num_cpus=4)"
 
   - name: ray-client
     requirements:
