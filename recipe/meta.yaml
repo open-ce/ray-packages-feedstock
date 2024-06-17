@@ -25,7 +25,7 @@ source:
     - patches/0014-allow-builds-with-root-user.patch    #[ppc64le]
 
 build:
-  number: 2
+  number: 3 
 
 # Need these up here for conda-smithy to handle them properly.
 requirements:
@@ -160,6 +160,7 @@ outputs:
         # https://github.com/conda-forge/ray-packages-feedstock/issues/16
         - ray.dashboard
       commands:
+        - export LD_PRELOAD=$PREFIX/lib/libstdc++.so.6
         - python -c "import ray; ray.init(include_dashboard=True, ignore_reinit_error=True, num_cpus=4)"
 
   - name: ray-client
