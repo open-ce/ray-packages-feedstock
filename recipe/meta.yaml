@@ -25,7 +25,7 @@ source:
     - patches/0014-allow-builds-with-root-user.patch    #[ppc64le]
 
 build:
-  number: 3 
+  number: 3
 
 # Need these up here for conda-smithy to handle them properly.
 requirements:
