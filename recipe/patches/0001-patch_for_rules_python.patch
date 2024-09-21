@@ -1,0 +1,28 @@
+diff --git a/WORKSPACE b/WORKSPACE
+index cf7d84bc88..5455e8319f 100644
+--- a/WORKSPACE
++++ b/WORKSPACE
+@@ -16,6 +16,15 @@ ray_deps_setup()
+ 
+ load("//bazel:ray_deps_build_all.bzl", "ray_deps_build_all")
+ 
++http_archive(
++    name = "rules_python",
++    sha256 = "c68bdc4fbec25de5b5493b8819cfc877c4ea299c0dcb15c244c5a00208cde311",
++    strip_prefix = "rules_python-0.31.0",
++    url = "https://github.com/bazelbuild/rules_python/releases/download/0.31.0/rules_python-0.31.0.tar.gz",
++)
++
++load("@rules_python//python:repositories.bzl","py_repositories")
++py_repositories()
+ ray_deps_build_all()
+ 
+ # This needs to be run after grpc_deps() in ray_deps_build_all() to make
+@@ -52,6 +61,7 @@ python_register_toolchains(
+     name = "python3_9",
+     python_version = "3.9",
+     register_toolchains = False,
++    ignore_root_user_error = True,
+ )
+ 
+ load("@python3_9//:defs.bzl", python39 = "interpreter")
