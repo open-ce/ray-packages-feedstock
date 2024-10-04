@@ -1,4 +1,4 @@
-{% set version = "2.9.2" %}
+{% set version = "2.35.0" %}
 
 package:
   name: ray-packages
@@ -8,24 +8,20 @@ source:
   git_url: https://github.com/ray-project/ray
   git_rev: ray-{{ version }}
   patches:
-    - patches/0001-add-name-attribute-for-googletest.patch
+    - patches/0001-patch_for_rules_python.patch   #[ppc64le]
     - patches/0002-patch-redis-for-ar-ranlib.patch
-    - patches/0007-Update-skylib-commit.patch
     - patches/0003-Disable-making-non-core-entry-scripts.patch
     - patches/0004-Remove-all-dependencies-from-setup.py.patch
     - patches/0005-Ignore-warnings-in-event.cc-and-logging.cc.patch
     - patches/0006-Add-bazel-linkopts-libs.patch
-    - patches/0007-Update-skylib-commit.patch
     - patches/0008-Fixed-compilation-error.patch
     - patches/0009-fixed-grpc-issue.patch          #[x86_64]
     - patches/0010-Use-rules_perl-which-is-fixed-for-ppc.patch
     - patches/0011-grpc-change-only.patch       #[ppc64le]
     - patches/0012-Fixed-boringssl-issue.patch  #[ppc64le]
-    - patches/0013-Added-patch-for-rules_python-on-ppc64le.patch    #[ppc64le]
-    - patches/0014-allow-builds-with-root-user.patch    #[ppc64le]
 
 build:
-  number: 3
+  number: 1
 
 # Need these up here for conda-smithy to handle them properly.
 requirements:
@@ -61,7 +57,7 @@ outputs:
       build:
         - {{ compiler('c') }}     # [ ppc_arch != "p10"]
         - {{ compiler('cxx') }}   # [ ppc_arch != "p10"]
-        - bazel {{ bazel }}
+        - bazel 6.5.0
         - sysroot_linux-64 2.17  # [linux64]
         - patchelf
         - colorama

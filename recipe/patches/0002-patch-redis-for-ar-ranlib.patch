@@ -1,7 +1,7 @@
-From 6b3012200c7ef4ec2a8ffde38bfbb8760cfe9ec4 Mon Sep 17 00:00:00 2001
+From 467abd481f53008675173b07b8a79a5110b74762 Mon Sep 17 00:00:00 2001
 From: mattip <matti.picus@gmail.com>
 Date: Mon, 25 Dec 2023 11:55:35 +0200
-Subject: [PATCH 1/9] patch redis for ar, ranlib
+Subject: [PATCH 1/7] patch redis for ar, ranlib
 
 Signed-off-by: Vasily Litvinov <vasilij.n.litvinov@intel.com>
 Signed-off-by: Gregory Shimansky <gregory.shimansky@intel.com>
@@ -127,5 +127,5 @@ index 0000000000..72a4097cd3
 + .PHONY: persist-settings
 +
 -- 
-2.40.1
+2.34.1
 
