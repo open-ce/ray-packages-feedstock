@@ -78,6 +78,7 @@ outputs:
         - openjdk {{ openjdk }}               # [x86_64]
       run:
         - python {{ python }}
+        - aiohttp >=3.7
         - aiosignal
         - click {{ click }}
         - colorama
@@ -232,8 +233,8 @@ outputs:
         - {{ pin_subpackage('ray-default', exact=True) }}
         - uvicorn
         - requests {{ requests }}
-        - starlette ==0.25.0
-        - fastapi ==0.92.0
+        - starlette ==0.36.2
+        - fastapi ==0.109.1
         - aiorwlock
         - fsspec {{ fsspec }}
     test:
